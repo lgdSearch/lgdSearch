@@ -2,15 +2,18 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"lgdSearch/controller"
+	"lgdSearch/pkg/trie"
+	"net/http"
 )
 
 func Init() *gin.Engine {
 	//设置默认引擎
 	engine := gin.Default()
 	engine.Use(cors())
+	trie.InitTrie("pkg/data/trieData.txt") // 载入 trie
 	engine.GET("/test/say_hello", controller.SayHello)
+	engine.GET("/book/:text", controller.GetRelatedSearch) // 相关搜索
 	return engine
 }
 

@@ -11,6 +11,7 @@ import (
 var strings []string
 var counts []int32
 
+// 用于遍历子树
 func (n *Node) foreach(runes []rune, deep int) {
 	if n.count != 0 {
 		strings = append(strings, string(runes))
@@ -25,7 +26,10 @@ func (n *Node) foreach(runes []rune, deep int) {
 	}
 }
 
-func Serialize(node *Node) ([]string, []int32) {
+// serialize
+// node 需要传入根节点
+// []string, []int32 返回 trie 树中所有的完整词条以及对应的count值
+func serialize(node *Node) ([]string, []int32) {
 	strings, counts = make([]string, 0), make([]int32, 0)
 	if node == nil {
 		return strings, counts
@@ -37,6 +41,7 @@ func Serialize(node *Node) ([]string, []int32) {
 	return strings, counts
 }
 
+// Write 序列化写入文件
 func Write(trie *Trie, filepath string) {
 	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
@@ -50,7 +55,7 @@ func Write(trie *Trie, filepath string) {
 	}(file)
 
 	writer := bufio.NewWriter(file)
-	str, counts := Serialize(trie.root)
+	str, counts := serialize(trie.root)
 	for pos, val := range str {
 		_, err := writer.WriteString(val + string(counts[pos]))
 		if err != nil {
@@ -59,6 +64,7 @@ func Write(trie *Trie, filepath string) {
 	}
 }
 
+// Load 从文件中加载 trie 树
 func Load(filepath string) *Trie {
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -78,16 +84,16 @@ func Load(filepath string) *Trie {
 		if err == io.EOF {
 			break
 		}
-		val, _, err := reader.ReadRune() // _ 是val作为rune的实际字节长度
-		trie.insertRunesWithCount([]rune(str), int32(val))
+		val, _, err := reader.ReadRune()                      // _ 是val作为rune的实际字节长度
+		go trie.insertRunesWithCount([]rune(str), int32(val)) // 强制类型转化的开销大吗，还是说直接将 []rune 存进去，读出来
 	}
 
 	return trie
 }
 
-// 自动保存索引，10秒钟检测一次
+// 自动保存索引，60秒钟检测一次
 func (t *Trie) automaticFlush(filepath string) {
-	ticker := time.NewTicker(time.Second * 10)
+	ticker := time.NewTicker(time.Second * 60)
 	size := 0
 
 	for {
@@ -96,8 +102,6 @@ func (t *Trie) automaticFlush(filepath string) {
 		if size != t.size {
 			size = t.size
 			t.FlushIndex(filepath)
-		} else {
-			//e.FlushIndex()
 		}
 		//定时GC
 		runtime.GC()

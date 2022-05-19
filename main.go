@@ -21,5 +21,6 @@ func main() {
 		return
 	}
 	engine := router.Init()
-	go engine.Run(":9090")
+	//go engine.Run(":9090")
+	engine.Run(":9090")
 }
