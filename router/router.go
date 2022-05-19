@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"lgdSearch/middleware"
 	"lgdSearch/controller"
 )
 
@@ -10,6 +11,9 @@ func Init() *gin.Engine {
 	//设置默认引擎
 	engine := gin.Default()
 	engine.Use(cors())
+	auth := middleware.GetJWTMiddle()
+	engine.POST("/login", auth.LoginHandler)
+	engine.POST("/logout", auth.LogoutHandler)
 	engine.GET("/test/say_hello", controller.SayHello)
 	return engine
 }

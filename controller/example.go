@@ -16,7 +16,7 @@ func SayHello(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.Error{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
-	text, err := handler.RetrieveText(req.Text)
+	text, err := handler.QueryText(req.Text)
 	if err != nil {
 		logger.Logger.Errorf("[SayHello] failed to get text, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, errors.Error{Error: http.StatusText(http.StatusInternalServerError)})
