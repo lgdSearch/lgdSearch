@@ -1,10 +1,10 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"lgdSearch/middleware"
 	"lgdSearch/controller"
+	"lgdSearch/middleware"
+	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 func Init() *gin.Engine {
@@ -14,6 +14,12 @@ func Init() *gin.Engine {
 	auth := middleware.GetJWTMiddle()
 	engine.POST("/login", auth.LoginHandler)
 	engine.POST("/logout", auth.LogoutHandler)
+	engine.POST("/register", controller.Register)
+	user := engine.Group("/user")
+	user.Use(auth.MiddlewareFunc())
+	{
+		engine.POST("/update", controller.UpdateProfile)
+	}
 	engine.GET("/test/say_hello", controller.SayHello)
 	return engine
 }

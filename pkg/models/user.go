@@ -6,13 +6,12 @@ import (
 
 type User struct {
 	gorm.Model
-	ID		  uint
-	Username  string
+	Username  string `gorm:"uniqueIndex"`
 	Nickname  string
 	Password  string
-	Favorites []uint
+	Favorites []Favorite
 }
 
 func (* User) TableName() string {
-	return "User"
+	return "users"
 }

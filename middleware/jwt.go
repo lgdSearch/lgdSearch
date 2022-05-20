@@ -4,7 +4,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"lgdSearch/pkg/models"
 	"lgdSearch/payloads"
-	"lgdSearch/pkg/errors"
+	"lgdSearch/pkg/weberror"
 	"lgdSearch/handler"
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +25,7 @@ func GetJWTMiddle() *jwt.GinJWTMiddleware {
 			return jwt.MapClaims{}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var req payloads.LoginResq
+			var req payloads.LoginReq
 			if err := c.ShouldBind(&req); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
@@ -38,7 +38,7 @@ func GetJWTMiddle() *jwt.GinJWTMiddleware {
 			return nil, jwt.ErrFailedAuthentication
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.JSON(code, errors.Error{Error: message,})
+			c.JSON(code, weberror.Info{Error: message})
 		},
 	})
 	if err != nil {
