@@ -8,6 +8,7 @@ type Favorite struct {
 	gorm.Model
 	UserId 		uint
 	DocId 		uint
+	Summary		string
 }
 
 func (*Favorite) TableName() string{

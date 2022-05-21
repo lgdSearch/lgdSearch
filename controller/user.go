@@ -43,3 +43,28 @@ func UpdateProfile(c *gin.Context) {
 	}
 	c.JSON(http.StatusNoContent, nil)
 }
+
+func DeleteAccount(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	err := handler.DeleteUser(claims["user"].(*models.User).ID)
+	if err != nil {
+		logger.Logger.Errorf("[DeleteAccount] failed to delete user, err: %s", err.Error())
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	c.JSON(http.StatusNoContent, nil)
+}
+
+func GetProfile(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	user, err := handler.QueryUser(claims["user"].(*models.User).ID, "")
+	if err != nil {
+		logger.Logger.Errorf("[GetProfile] failed to query user, err: %s", err.Error())
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	c.JSON(http.StatusOK, &payloads.GetProfileResp{
+		Username: user.Username,
+		Nickname: user.Nickname,
+	})
+}

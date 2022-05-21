@@ -36,3 +36,8 @@ func UpdateUser (id uint, nickname string) error {
 	result := db.Engine.Model(&models.User{Model: gorm.Model{ID: id}}).Updates(models.User{Nickname: nickname})
 	return result.Error
 }
+
+func DeleteUser (id uint) error {
+	result := db.Engine.Delete(&models.User{Model: gorm.Model{ID: id}})
+	return result.Error
+}
