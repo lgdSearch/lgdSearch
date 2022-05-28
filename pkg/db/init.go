@@ -16,5 +16,6 @@ func Init() {
 		panic("failed to connect database")
 	}
 	Engine.AutoMigrate(&models.User{})
+	Engine.AutoMigrate(&models.Favorite{})
 }
 

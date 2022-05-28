@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"lgdSearch/pkg/logger"
 	"lgdSearch/router"
+	"lgdSearch/pkg/db"
 )
 
 func main() {
@@ -21,5 +22,6 @@ func main() {
 		return
 	}
 	engine := router.Init()
+	db.Init()
 	go engine.Run(":9090")
 }

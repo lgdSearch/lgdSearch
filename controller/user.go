@@ -1,14 +1,17 @@
 package controller
 
 import (
+	"errors"
 	"lgdSearch/handler"
 	"lgdSearch/payloads"
+	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/models"
 	"lgdSearch/pkg/weberror"
-	"lgdSearch/pkg/logger"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func Register(c *gin.Context) {
@@ -18,7 +21,18 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
-	_, err := handler.CreateUser(req.Username, req.Password)
+	_, err := handler.QueryUser(0, req.Username)
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		if err != nil {
+			logger.Logger.Errorf("[Register] failed to create user, err: %s", err.Error())
+			c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+			return
+		}
+		logger.Logger.Errorf("[Register] failed to create user, err: %s", "duplicate username")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: "duplicate username"})
+		return
+	}
+	_, err = handler.CreateUser(req.Username, req.Password)
 	if err != nil {
 		logger.Logger.Errorf("[Register] failed to create user, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
@@ -27,7 +41,7 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-func UpdateProfile(c *gin.Context) {
+func UpdateNickname(c *gin.Context) {
 	var req payloads.UpdateProfileReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		logger.Logger.Errorf("[UpdateProfile] failed to parse request, err: %s", err.Error())
@@ -35,7 +49,7 @@ func UpdateProfile(c *gin.Context) {
 		return
 	}
 	claims := jwt.ExtractClaims(c)
-	err := handler.UpdateUser(claims["user"].(*models.User).ID, req.Nickname)
+	err := handler.UpdateUserNickname(claims["user"].(*models.User).ID, req.Nickname)
 	if err != nil {
 		logger.Logger.Errorf("[UpdateProfile] failed to update user, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})

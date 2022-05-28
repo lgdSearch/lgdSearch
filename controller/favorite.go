@@ -1,14 +1,17 @@
 package controller
 
 import (
+	"errors"
 	"lgdSearch/handler"
 	"lgdSearch/payloads"
+	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/models"
 	"lgdSearch/pkg/weberror"
-	"lgdSearch/pkg/logger"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func AddFavorite(c *gin.Context) {
@@ -19,7 +22,18 @@ func AddFavorite(c *gin.Context) {
 		return
 	}
 	claims := jwt.ExtractClaims(c)
-	err := handler.AppendFavorite(claims["user"].(*models.User).ID, req.DocId)
+	_, err := handler.QueryFavorite(claims["user"].(*models.User).ID, req.DocId)
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		if err != nil {
+			logger.Logger.Errorf("[AddFavorite] failed to parse request, err: %s", err.Error())
+			c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+			return
+		}
+		logger.Logger.Errorf("[AddFavorite] failed to parse request, err: %s", "duplicate document")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: "duplicate document"})
+		return
+	}
+	err = handler.AppendFavorite(claims["user"].(*models.User).ID, req.DocId)
 	if err != nil {
 		logger.Logger.Errorf("[AddFavorite] failed to addend favorite, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})

@@ -23,3 +23,9 @@ func QueryFavorites (userId uint) ([]models.Favorite, error) {
 	err := db.Engine.Model(&models.User{Model: gorm.Model{ID: userId}}).Association("Favorites").Find(&favorites)
 	return favorites, err
 }
+
+func QueryFavorite (userId, docId uint) (models.Favorite, error) {
+	favorite := models.Favorite{}
+	result := db.Engine.Where("user_id = ? AND doc_id = ?", userId, docId).First(&favorite)
+	return favorite, result.Error
+}

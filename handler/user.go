@@ -4,7 +4,6 @@ import (
 	"lgdSearch/pkg/db"
 	"lgdSearch/pkg/models"
 	"gorm.io/gorm"
-	"time"
 )
 
 func QueryUser (id uint, username string) (*models.User, error){
@@ -26,13 +25,13 @@ func CreateUser (username, password string) (uint, error) {
 	user := models.User{
 		Username: username,
 		Password: password,
-		Nickname: time.Now().String(),
+		Nickname: "游客",
 	}
 	result := db.Engine.Create(&user)
 	return user.ID, result.Error
 }
 
-func UpdateUser (id uint, nickname string) error {
+func UpdateUserNickname (id uint, nickname string) error {
 	result := db.Engine.Model(&models.User{Model: gorm.Model{ID: id}}).Updates(models.User{Nickname: nickname})
 	return result.Error
 }
