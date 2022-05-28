@@ -4,8 +4,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"lgdSearch/pkg/logger"
+	"lgdSearch/pkg/trie"
 	"lgdSearch/router"
 	"lgdSearch/pkg/db"
+	"log"
 )
 
 func main() {
@@ -23,5 +25,14 @@ func main() {
 	}
 	engine := router.Init()
 	db.Init()
-	go engine.Run(":9090")
+
+	trie.InitHotSearch("./pkg/data/HotSearch.txt")
+	defer trie.GetHotSearch().Flush("./pkg/data/HotSearch.txt") // flush
+	log.Println("HotSearch Init Success!")
+
+	trie.InitTrie("./pkg/data/trieData.txt") // 载入 trie
+	defer trie.Tree.FlushIndex("./pkg/data/trieData.txt")
+	log.Println("Trie Init Success!")
+
+	engine.Run(":9090")
 }

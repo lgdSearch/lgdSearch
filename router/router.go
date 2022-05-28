@@ -1,10 +1,10 @@
 package router
 
 import (
+	"github.com/gin-gonic/gin"
 	"lgdSearch/controller"
 	"lgdSearch/middleware"
 	"net/http"
-	"github.com/gin-gonic/gin"
 )
 
 func Init() *gin.Engine {
@@ -29,8 +29,9 @@ func Init() *gin.Engine {
 			favortes.GET("/", controller.GetFavorites)
 		}
 	}
-
+	engine.GET("/query/hotSearch", controller.HotSearch) // 热搜
 	engine.GET("/test/say_hello", controller.SayHello)
+	engine.GET("/book/:text", controller.GetRelatedSearch) // 相关搜索
 	return engine
 }
 

@@ -18,8 +18,6 @@ type Heap []*heapNode
 
 func (h Heap) Len() int { return len(h) }
 
-// Less 我需要设计一个排序算法, 首先要侧重deep, 但是不能忽略 count
-// 是否考虑 deep 设计为浮点数, deep^2 * count ?
 func (h Heap) Less(i, j int) bool {
 	return h[i].compare(h[j])
 }
