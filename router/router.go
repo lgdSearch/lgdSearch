@@ -12,16 +12,16 @@ func Init() *gin.Engine {
 	engine := gin.Default()
 	engine.Use(cors())
 	auth := middleware.GetJWTMiddle()
-	engine.PUT("/login", auth.LoginHandler)
-	engine.PUT("/logout", auth.LogoutHandler)
+	engine.POST("/login", auth.LoginHandler)
 	engine.PUT("/register", controller.Register)
 
 	users := engine.Group("/users")
 	users.Use(auth.MiddlewareFunc())
 	{
-		engine.DELETE("/", controller.DeleteAccount)
-		engine.PATCH("/nickname", controller.UpdateNickname)
-		engine.GET("/profile", controller.GetProfile)
+		users.PUT("/logout", auth.LogoutHandler)
+		users.DELETE("/", controller.DeleteAccount)
+		users.PATCH("/nickname", controller.UpdateNickname)
+		users.GET("/profile", controller.GetProfile)
 		favortes := users.Group("/favorites")
 		{
 			favortes.PUT("/", controller.AddFavorite)

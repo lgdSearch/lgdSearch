@@ -12,6 +12,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(c *gin.Context) {
@@ -32,6 +33,13 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: "duplicate username"})
 		return
 	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		logger.Logger.Errorf("[Register] failed to hash password, err: %s", err.Error())
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	req.Password = string(hash)
 	_, err = handler.CreateUser(req.Username, req.Password)
 	if err != nil {
 		logger.Logger.Errorf("[Register] failed to create user, err: %s", err.Error())

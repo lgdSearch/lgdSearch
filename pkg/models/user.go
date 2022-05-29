@@ -6,9 +6,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Username  string `gorm:"size:30"`
-	Nickname  string `gorm:"size:30"`
-	Password  string `gorm:"size:20"`
+	Username  string
+	Nickname  string
+	Password  string
 	Favorites []Favorite
 }
 
