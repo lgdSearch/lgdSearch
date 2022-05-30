@@ -46,6 +46,37 @@ func TestMain(m *testing.M) {
 	engine.Run(":9090")
 	m.Run()
 	db.Engine.Where("1 = 1").Delete(&models.User{})
+	db.Engine.Where("1 = 1").Delete(&models.Favorite{})
+}
+
+func newUserToken(name string) string {
+	hash, _ := bcrypt.GenerateFromPassword([]byte("test"), bcrypt.DefaultCost)
+	user := models.User{
+		Username: name + "_test",
+		Password: string(hash),
+		Nickname: "游客",
+		Favorites: []models.Favorite{
+			{DocId: 1},
+			{DocId: 2},
+			{DocId: 5},
+		},
+	}
+	db.Engine.Create(&user)
+	uri := "/login"
+	params := map[string]interface{}{
+		"username": name + "_test",
+		"password": "test",
+	}
+	w := httprequest.Post("", uri, params, engine)
+	r1 := w.Result()
+	defer r1.Body.Close()
+	if w.Code != 200 {
+		return ""
+	}
+	body, _ := ioutil.ReadAll(r1.Body)
+	var resp payloads.LoginResp
+	json.Unmarshal(body, &resp)
+	return resp.Token
 }
 
 func TestRegister(t *testing.T) {
@@ -136,27 +167,44 @@ func TestGetProfile(t *testing.T) {
 	}
 }
 
-func newUserToken(name string) string {
-	hash, _ := bcrypt.GenerateFromPassword([]byte("test"), bcrypt.DefaultCost)
-	user := models.User{
-		Username: name+"_test",
-		Password: string(hash),
-		Nickname: "游客",
-	}
-	db.Engine.Create(&user)
-	uri := "/login"
+func TestAddFavorite(t *testing.T) {
+	token := newUserToken("AddFavorite")
+	uri := "/users/favorites"
 	params := map[string]interface{}{
-		"username": name+"_test",
-		"password": "test",
+		"doc_id": 123,
 	}
-	w := httprequest.Post("", uri, params, engine)
-	r1 := w.Result()
-	defer r1.Body.Close()
+	w := httprequest.Put(token, uri, params, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 204 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestDeleteFavorite(t *testing.T) {
+	token := newUserToken("DeleteFavorite")
+	uri := "/users/favorites"
+	params := map[string]interface{}{
+		"doc_id": 1,
+	}
+	w := httprequest.Delete(token, uri, params, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 204 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestGetFavorites(t *testing.T) {
+	token := newUserToken("GetFavorites")
+	uri := "/users/favorites"
+	w := httprequest.Get(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
 	if w.Code != 200 {
-		return ""
+		t.Errorf("code:%d err:%v", w.Code, string(body))
 	}
-	body, _ := ioutil.ReadAll(r1.Body)
-	var resp payloads.LoginResp
-	json.Unmarshal(body, &resp)
-	return resp.Token
 }

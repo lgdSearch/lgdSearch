@@ -25,6 +25,7 @@ func TestMain(m *testing.M) {
 	db.Engine.AutoMigrate(&models.Favorite{})
 	m.Run()
 	db.Engine.Where("1 = 1").Delete(&models.User{})
+	db.Engine.Where("1 = 1").Delete(&models.Favorite{})
 }
 
 func newUserId(name string) uint{
@@ -54,7 +55,7 @@ func TestQueryUser(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	_, err = handler.QueryUser(0, "test")
+	_, err = handler.QueryUser(0, "QueryUser_test")
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -79,11 +80,20 @@ func TestDeleteUser(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
+	user := models.User{}
+	result := db.Engine.First(&user, id)
+	if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		if result.Error == nil {
+			t.Error("entry not deleted")
+		}else {
+			t.Error(result.Error.Error())
+		}
+	}
 }
 
 func TestAppendFavorite (t *testing.T) {
 	id := newUserId("AppendFavorite")
-	err := handler.AppendFavorite(id, 1)
+	err := handler.AppendFavorite(id, 123)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -95,17 +105,24 @@ func TestDeleteFavorite (t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
+	num := db.Engine.Model(&models.User{Model: gorm.Model{ID: id}}).Association("Favorites").Count()
+	if num != 2 {
+		t.Error("incorrect number of entries")
+	}
 }
 
 func TestQueryFavorites (t *testing.T) {
 	id := newUserId("QueryFavorites")
-	_, err := handler.QueryFavorites(id)
+	result, err := handler.QueryFavorites(id)
 	if err != nil{
 		t.Error(err.Error())
 	}
+	if len(result) != 3 {
+		t.Error("incorrect number of entries")
+	}
 }
 
-func TestQueryFavorite (t *testing.T) {
+ func TestQueryFavorite (t *testing.T) {
 	id := newUserId("QueryFavorite")
 	_, err := handler.QueryFavorite(id, 1)
 	if err != nil{

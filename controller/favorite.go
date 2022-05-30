@@ -5,8 +5,8 @@ import (
 	"lgdSearch/handler"
 	"lgdSearch/payloads"
 	"lgdSearch/pkg/logger"
-	"lgdSearch/pkg/models"
 	"lgdSearch/pkg/weberror"
+	"lgdSearch/pkg/extractclaims"
 	"net/http"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -21,8 +21,13 @@ func AddFavorite(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
-	claims := jwt.ExtractClaims(c)
-	_, err := handler.QueryFavorite(claims["user"].(*models.User).ID, req.DocId)
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[AddFavorite] failed to parse request, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	_, err := handler.QueryFavorite(user.ID, req.DocId)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		if err != nil {
 			logger.Logger.Errorf("[AddFavorite] failed to parse request, err: %s", err.Error())
@@ -33,7 +38,7 @@ func AddFavorite(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: "duplicate document"})
 		return
 	}
-	err = handler.AppendFavorite(claims["user"].(*models.User).ID, req.DocId)
+	err = handler.AppendFavorite(user.ID, req.DocId)
 	if err != nil {
 		logger.Logger.Errorf("[AddFavorite] failed to addend favorite, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
@@ -49,8 +54,13 @@ func DeleteFavorite(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
-	claims := jwt.ExtractClaims(c)
-	err := handler.DeleteFavorite(claims["user"].(*models.User).ID, req.DocId)
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[DeleteFavorite] failed to parse request, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	err := handler.DeleteFavorite(user.ID, req.DocId)
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to delete favorite, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
@@ -60,8 +70,13 @@ func DeleteFavorite(c *gin.Context) {
 }
 
 func GetFavorites(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	favorites, err := handler.QueryFavorites(claims["user"].(*models.User).ID)
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[DeleteFavorite] failed to query favorites, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	favorites, err := handler.QueryFavorites(user.ID)
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to query favorites, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})

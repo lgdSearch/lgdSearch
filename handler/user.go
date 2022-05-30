@@ -4,6 +4,7 @@ import (
 	"lgdSearch/pkg/db"
 	"lgdSearch/pkg/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func QueryUser (id uint, username string) (*models.User, error){
@@ -37,6 +38,6 @@ func UpdateUserNickname (id uint, nickname string) error {
 }
 
 func DeleteUser (id uint) error {
-	result := db.Engine.Delete(&models.User{Model: gorm.Model{ID: id}})
+	result := db.Engine.Select(clause.Associations).Delete(&models.User{Model: gorm.Model{ID: id}})
 	return result.Error
 }

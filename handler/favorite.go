@@ -15,7 +15,8 @@ func AppendFavorite (userId, docId uint) error {
 }
 
 func DeleteFavorite (userId, docId uint) error {
-	return db.Engine.Model(&models.User{Model: gorm.Model{ID: userId}}).Association("Favorites").Delete(&models.Favorite{DocId: docId})
+	result := db.Engine.Where("user_id = ? AND doc_id = ?", userId, docId).Delete(&models.Favorite{})
+	return result.Error
 }
 
 func QueryFavorites (userId uint) ([]models.Favorite, error) {
