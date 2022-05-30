@@ -9,7 +9,6 @@ import (
 	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/models"
 	"lgdSearch/router"
-	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -45,11 +44,11 @@ func TestMain(m *testing.M) {
 	// log.Println("Trie Init Success!")
 
 	engine.Run(":9090")
-	os.Exit(m.Run())
+	m.Run()
+	db.Engine.Where("1 = 1").Delete(&models.User{})
 }
 
 func TestRegister(t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
 	uri := "/register"
 	params := map[string]interface{}{
 		"username": "testRegister",
@@ -65,7 +64,6 @@ func TestRegister(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
 	hash, _ := bcrypt.GenerateFromPassword([]byte("test"), bcrypt.DefaultCost)
 	user := models.User{
 		Username: "test",
@@ -88,37 +86,77 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLogout(t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
+	token := newUserToken("Logout")
+	uri := "/users/logout"
+	w := httprequest.Put(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 200 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestUpdateNickname(t *testing.T) {
+	token := newUserToken("UpdateNickname")
+	uri := "/users/nickname"
+	params := map[string]interface{}{
+		"nickname": "lgdSearch",
+	}
+	w := httprequest.Patch(token, uri, params, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 204 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestDeleteAccount(t *testing.T) {
+	token := newUserToken("DeleteAccount")
+	uri := "/users"
+	w := httprequest.Delete(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 204 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestGetProfile(t *testing.T) {
+	token := newUserToken("GetProfile")
+	uri := "/users/profile"
+	w := httprequest.Get(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 200 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func newUserToken(name string) string {
 	hash, _ := bcrypt.GenerateFromPassword([]byte("test"), bcrypt.DefaultCost)
 	user := models.User{
-		Username: "test",
+		Username: name+"_test",
 		Password: string(hash),
 		Nickname: "游客",
 	}
 	db.Engine.Create(&user)
 	uri := "/login"
 	params := map[string]interface{}{
-		"username": "test",
+		"username": name+"_test",
 		"password": "test",
 	}
 	w := httprequest.Post("", uri, params, engine)
 	r1 := w.Result()
 	defer r1.Body.Close()
+	if w.Code != 200 {
+		return ""
+	}
 	body, _ := ioutil.ReadAll(r1.Body)
-	if w.Code != 200 {
-		t.Errorf("code:%d err:%v", w.Code, string(body))
-	}
 	var resp payloads.LoginResp
-	err := json.Unmarshal(body, &resp)
-	if err != nil {
-		t.Error(err.Error())
-	}
-	uri = "/users/logout"
-	w = httprequest.Put(resp.Token, uri, nil, engine)
-	r2 := w.Result()
-	defer r2.Body.Close()
-	body, _ = ioutil.ReadAll(r2.Body)
-	if w.Code != 200 {
-		t.Errorf("code:%d err:%v", w.Code, string(body))
-	}
+	json.Unmarshal(body, &resp)
+	return resp.Token
 }

@@ -19,14 +19,14 @@ func Init() *gin.Engine {
 	users.Use(auth.MiddlewareFunc())
 	{
 		users.PUT("/logout", auth.LogoutHandler)
-		users.DELETE("/", controller.DeleteAccount)
+		users.DELETE("", controller.DeleteAccount)
 		users.PATCH("/nickname", controller.UpdateNickname)
 		users.GET("/profile", controller.GetProfile)
 		favortes := users.Group("/favorites")
 		{
-			favortes.PUT("/", controller.AddFavorite)
-			favortes.DELETE("/", controller.DeleteFavorite)
-			favortes.GET("/", controller.GetFavorites)
+			favortes.PUT("", controller.AddFavorite)
+			favortes.DELETE("", controller.DeleteFavorite)
+			favortes.GET("", controller.GetFavorites)
 		}
 	}
 	engine.GET("/query/hotSearch", controller.HotSearch) // 热搜

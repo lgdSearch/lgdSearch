@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/viper"
 	"lgdSearch/pkg/models"
 	"lgdSearch/handler"
-	"os"
 	"errors"
 )
 
@@ -24,11 +23,25 @@ func TestMain(m *testing.M) {
 	}
 	db.Engine.AutoMigrate(&models.User{})
 	db.Engine.AutoMigrate(&models.Favorite{})
-	os.Exit(m.Run())
+	m.Run()
+	db.Engine.Where("1 = 1").Delete(&models.User{})
+}
+
+func newUserId(name string) uint{
+	user := models.User{
+		Username: name+"_test",
+		Password: "test",
+		Favorites: []models.Favorite{
+			{DocId: 1},
+			{DocId: 2},
+			{DocId: 5},
+		},
+	}
+	db.Engine.Create(&user)
+	return user.ID
 }
 
 func TestCreateUser(t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
 	_, err := handler.CreateUser("test", "123456")
 	if err != nil {
 		t.Error(err.Error())
@@ -36,13 +49,8 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestQueryUser(t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	user := models.User{
-		Username: "test",
-		Password: "123456",
-	}
-	db.Engine.Create(&user)
-	_, err := handler.QueryUser(user.ID, "")
+	id := newUserId("QueryUser")
+	_, err := handler.QueryUser(id, "")
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -53,109 +61,65 @@ func TestQueryUser(t *testing.T) {
 }
 
 func TestUpdateUserNickname(t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	user := models.User{
-		Username: "test",
-		Password: "123456",
-	}
-	db.Engine.Create(&user)
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	err := handler.UpdateUserNickname(user.ID, "test")
+	id := newUserId("UpdateUserNickname")
+	err := handler.UpdateUserNickname(id, "test")
 	if err != nil {
 		t.Error(err.Error())
 	}
 	rUser := models.User{}
-	result := db.Engine.First(&rUser, user.ID)
+	result := db.Engine.First(&rUser, id)
 	if result.Error != nil || rUser.Nickname != "test" {
 		t.Error(result.Error.Error())
 	}
 }
 
 func TestDeleteUser(t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	user := models.User{
-		Username: "test",
-		Password: "123456",
-	}
-	db.Engine.Create(&user)
-	err := handler.DeleteUser(user.ID)
+	id := newUserId("DeleteUser")
+	err := handler.DeleteUser(id)
 	if err != nil {
 		t.Error(err.Error())
 	}
 }
 
 func TestAppendFavorite (t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	user := models.User{
-		Username: "test",
-		Password: "123456",
-	}
-	db.Engine.Create(&user)
-	err := handler.AppendFavorite(user.ID, 1)
+	id := newUserId("AppendFavorite")
+	err := handler.AppendFavorite(id, 1)
 	if err != nil {
 		t.Error(err.Error())
 	}
 }
 
 func TestDeleteFavorite (t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	user := models.User{
-		Username: "test",
-		Password: "123456",
-		Favorites: []models.Favorite{
-			{DocId: 1},
-		},
-	}
-	db.Engine.Create(&user)
-	err := handler.DeleteFavorite(user.ID, 1)
+	id := newUserId("DeleteFavorite")
+	err := handler.DeleteFavorite(id, 1)
 	if err != nil {
 		t.Error(err.Error())
 	}
 }
 
 func TestQueryFavorites (t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	user := models.User{
-		Username: "test",
-		Password: "123456",
-		Favorites: []models.Favorite{
-			{DocId: 1},
-			{DocId: 2},
-			{DocId: 5},
-		},
-	}
-	db.Engine.Create(&user)
-	favorites, err := handler.QueryFavorites(user.ID)
-	if err != nil || len(favorites) != 3{
+	id := newUserId("QueryFavorites")
+	_, err := handler.QueryFavorites(id)
+	if err != nil{
 		t.Error(err.Error())
 	}
 }
 
 func TestQueryFavorite (t *testing.T) {
-	defer db.Engine.Where("1 = 1").Delete(&models.User{})
-	user := models.User{
-		Username: "test",
-		Password: "123456",
-		Favorites: []models.Favorite{
-			{DocId: 1},
-			{DocId: 2},
-			{DocId: 5},
-		},
-	}
-	db.Engine.Create(&user)
-	_, err := handler.QueryFavorite(user.ID, 1)
+	id := newUserId("QueryFavorite")
+	_, err := handler.QueryFavorite(id, 1)
 	if err != nil{
 		t.Error(err.Error())
 	}
-	_, err = handler.QueryFavorite(user.ID, 2)
+	_, err = handler.QueryFavorite(id, 2)
 	if err != nil{
 		t.Error(err.Error())
 	}
-	_, err = handler.QueryFavorite(user.ID, 5)
+	_, err = handler.QueryFavorite(id, 5)
 	if err != nil{
 		t.Error(err.Error())
 	}
-	_, err = handler.QueryFavorite(user.ID, 6)
+	_, err = handler.QueryFavorite(id, 6)
 	if !errors.Is(err, gorm.ErrRecordNotFound){
 		t.Error(err.Error())
 	}

@@ -5,14 +5,14 @@ import (
 	"lgdSearch/handler"
 	"lgdSearch/payloads"
 	"lgdSearch/pkg/logger"
-	"lgdSearch/pkg/models"
 	"lgdSearch/pkg/weberror"
+	"lgdSearch/pkg/extractclaims"
 	"net/http"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func Register(c *gin.Context) {
@@ -56,8 +56,13 @@ func UpdateNickname(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
-	claims := jwt.ExtractClaims(c)
-	err := handler.UpdateUserNickname(claims["user"].(*models.User).ID, req.Nickname)
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[UpdateProfile] failed to update user, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	err := handler.UpdateUserNickname(user.ID, req.Nickname)
 	if err != nil {
 		logger.Logger.Errorf("[UpdateProfile] failed to update user, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
@@ -67,8 +72,13 @@ func UpdateNickname(c *gin.Context) {
 }
 
 func DeleteAccount(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	err := handler.DeleteUser(claims["user"].(*models.User).ID)
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[DeleteAccount] failed to delete user, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	err := handler.DeleteUser(user.ID)
 	if err != nil {
 		logger.Logger.Errorf("[DeleteAccount] failed to delete user, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
@@ -78,8 +88,13 @@ func DeleteAccount(c *gin.Context) {
 }
 
 func GetProfile(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	user, err := handler.QueryUser(claims["user"].(*models.User).ID, "")
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[GetProfile] failed to query user, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	user, err := handler.QueryUser(user.ID, "")
 	if err != nil {
 		logger.Logger.Errorf("[GetProfile] failed to query user, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
