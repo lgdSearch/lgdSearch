@@ -15,6 +15,17 @@ import (
 	"gorm.io/gorm"
 )
 
+// 用户注册
+// @Tags user
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        RegisterReq    body      payloads.RegisterReq  true  "username and pwd"
+// @Success      204
+// @Failure      400            {object}  weberror.Info               "Bad Request"
+// @Failure      404            {object}  weberror.Info               "Not Found"
+// @Failure      500            {object}  weberror.Info               "InternalServerError"
+// @Router       /register [put]
 func Register(c *gin.Context) {
 	var req payloads.RegisterReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -49,6 +60,19 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// 修改昵称
+// @Tags user
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string                     true "userToken"
+// @Param        UpdateNickname body      payloads.UpdateProfileReq  true "nickname"
+// @Success      204
+// @Failure      400            {object}  weberror.Info                   "Bad Request"
+// @Failure      404            {object}  weberror.Info                   "Not Found"
+// @Failure      500            {object}  weberror.Info                   "InternalServerError"
+// @Router       /users/nickname [patch]
+// @Security     Token
 func UpdateNickname(c *gin.Context) {
 	var req payloads.UpdateProfileReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -71,6 +95,18 @@ func UpdateNickname(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// 删除账户
+// @Tags user
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string         true  "userToken"
+// @Success      204
+// @Failure      400            {object}  weberror.Info        "Bad Request"
+// @Failure      404            {object}  weberror.Info        "Not Found"
+// @Failure      500            {object}  weberror.Info        "InternalServerError"
+// @Router       /users [delete]
+// @Security     Token
 func DeleteAccount(c *gin.Context) {
 	user := extractclaims.ToUser(jwt.ExtractClaims(c))
 	if user == nil {
@@ -87,6 +123,18 @@ func DeleteAccount(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// 获取个人资料
+// @Tags user
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string                  true "userToken"
+// @Success      200            {object}  payloads.GetProfileResp
+// @Failure      400            {object}  weberror.Info                "Bad Request"
+// @Failure      404            {object}  weberror.Info                "Not Found"
+// @Failure      500            {object}  weberror.Info                "InternalServerError"
+// @Router       /users/profile [get]
+// @Security     Token
 func GetProfile(c *gin.Context) {
 	user := extractclaims.ToUser(jwt.ExtractClaims(c))
 	if user == nil {
@@ -104,4 +152,35 @@ func GetProfile(c *gin.Context) {
 		Username: user.Username,
 		Nickname: user.Nickname,
 	})
+}
+
+// 登录
+// @Tags user
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        LoginReq       body      payloads.LoginReq    true  "username and pwd"
+// @Success      200            {object}  payloads.LoginResp
+// @Failure      400            {object}  weberror.Info              "Bad Request"
+// @Failure      404            {object}  weberror.Info              "Not Found"
+// @Failure      500            {object}  weberror.Info              "InternalServerError"
+// @Router       /login [post]
+func Login(c *gin.Context) {
+	//生成文档用，真实接口由gin-jwt生成
+}
+
+// 登出
+// @Tags user
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string         true  "userToken"
+// @Success      204
+// @Failure      400            {object}  weberror.Info        "Bad Request"
+// @Failure      404            {object}  weberror.Info        "Not Found"
+// @Failure      500            {object}  weberror.Info        "InternalServerError"
+// @Router       /users/logout [delete]
+// @Security     Token
+func Logout(c *gin.Context) {
+	//生成文档用，真实接口由gin-jwt生成
 }

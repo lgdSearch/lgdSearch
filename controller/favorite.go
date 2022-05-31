@@ -8,15 +8,28 @@ import (
 	"lgdSearch/pkg/weberror"
 	"lgdSearch/pkg/extractclaims"
 	"net/http"
-
+	"strconv"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
+// 添加收藏
+// @Tags favorite
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string          true       "userToken"
+// @Param        doc_id         path      uint            true       "doc_id in leveldb"
+// @Success      204
+// @Failure      400            {object}  weberror.Info              "Bad Request"
+// @Failure      404            {object}  weberror.Info              "Not Found"
+// @Failure      500            {object}  weberror.Info              "InternalServerError"
+// @Router       /users/favorites/{doc_id} [put]
+// @Security     Token
 func AddFavorite(c *gin.Context) {
-	var req payloads.AddFavoriteReq
-	if err := c.ShouldBindJSON(&req); err != nil {
+	docId, err := strconv.ParseUint(c.Param("doc_id"), 10, 32)
+	if err != nil {
 		logger.Logger.Errorf("[AddFavorite] failed to parse request, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
@@ -27,7 +40,7 @@ func AddFavorite(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
-	_, err := handler.QueryFavorite(user.ID, req.DocId)
+	_, err = handler.QueryFavorite(user.ID, uint(docId))
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		if err != nil {
 			logger.Logger.Errorf("[AddFavorite] failed to parse request, err: %s", err.Error())
@@ -38,7 +51,7 @@ func AddFavorite(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: "duplicate document"})
 		return
 	}
-	err = handler.AppendFavorite(user.ID, req.DocId)
+	err = handler.AppendFavorite(user.ID, uint(docId))
 	if err != nil {
 		logger.Logger.Errorf("[AddFavorite] failed to addend favorite, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
@@ -47,9 +60,22 @@ func AddFavorite(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// 取消收藏
+// @Tags favorite
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string          true       "userToken"
+// @Param        doc_id         path      uint            true       "doc_id in leveldb"
+// @Success      204
+// @Failure      400            {object}  weberror.Info              "Bad Request"
+// @Failure      404            {object}  weberror.Info              "Not Found"
+// @Failure      500            {object}  weberror.Info              "InternalServerError"
+// @Router       /users/favorites/{doc_id} [delete]
+// @Security     Token
 func DeleteFavorite(c *gin.Context) {
-	var req payloads.DeleteFavoriteReq
-	if err := c.ShouldBindJSON(&req); err != nil {
+	docId, err := strconv.ParseUint(c.Param("doc_id"), 10, 32)
+	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to parse request, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
@@ -60,7 +86,7 @@ func DeleteFavorite(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
-	err := handler.DeleteFavorite(user.ID, req.DocId)
+	err = handler.DeleteFavorite(user.ID, uint(docId))
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to delete favorite, err: %s", err.Error())
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
@@ -69,6 +95,18 @@ func DeleteFavorite(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// 获取全部收藏
+// @Tags favorite
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string          true       "userToken"
+// @Success      200            {object}  payloads.GetFavoritesResp
+// @Failure      400            {object}  weberror.Info              "Bad Request"
+// @Failure      404            {object}  weberror.Info              "Not Found"
+// @Failure      500            {object}  weberror.Info              "InternalServerError"
+// @Router       /users/favorites [get]
+// @Security     Token
 func GetFavorites(c *gin.Context) {
 	user := extractclaims.ToUser(jwt.ExtractClaims(c))
 	if user == nil {

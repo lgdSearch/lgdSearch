@@ -18,14 +18,14 @@ func Init() *gin.Engine {
 	users := engine.Group("/users")
 	users.Use(auth.MiddlewareFunc())
 	{
-		users.PUT("/logout", auth.LogoutHandler)
+		users.DELETE("/logout", auth.LogoutHandler)
 		users.DELETE("", controller.DeleteAccount)
 		users.PATCH("/nickname", controller.UpdateNickname)
 		users.GET("/profile", controller.GetProfile)
 		favortes := users.Group("/favorites")
 		{
-			favortes.PUT("", controller.AddFavorite)
-			favortes.DELETE("", controller.DeleteFavorite)
+			favortes.PUT("/:doc_id", controller.AddFavorite)
+			favortes.DELETE("/:doc_id", controller.DeleteFavorite)
 			favortes.GET("", controller.GetFavorites)
 		}
 	}

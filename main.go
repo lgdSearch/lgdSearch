@@ -10,6 +10,19 @@ import (
 	"log"
 )
 
+// @title           lgdSearch API
+// @version         1.0
+// @description     This is a simple search engine.
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:9090
+
+// @securityDefinitions.apikey  Token
+// @in                          header
+// @name                        Authorization
+// @description					should be set with extra string "Bearer " before it, sample: "Authorization:Bearer XXXXXXXXXXX(token)"
 func main() {
 	//初始化日志
 	if err := logger.InitLog(logrus.DebugLevel); err != nil {

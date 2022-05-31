@@ -8,6 +8,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 const identityKey = "user"
@@ -40,6 +41,9 @@ func GetJWTMiddle() *jwt.GinJWTMiddleware {
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, weberror.Info{Error: message})
+		},
+		LogoutResponse: func(c *gin.Context, code int) {
+			c.JSON(http.StatusNoContent, nil)
 		},
 	})
 	if err != nil {

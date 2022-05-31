@@ -1,0 +1,373 @@
+definitions:
+  payloads.GetFavoritesResp:
+    properties:
+      doc_id:
+        type: integer
+      summary:
+        type: string
+    type: object
+  payloads.GetProfileResp:
+    properties:
+      nickname:
+        type: string
+      username:
+        type: string
+    type: object
+  payloads.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  payloads.LoginResp:
+    properties:
+      expire:
+        type: string
+      token:
+        type: string
+    required:
+    - expire
+    - token
+    type: object
+  payloads.RegisterReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  payloads.UpdateProfileReq:
+    properties:
+      nickname:
+        type: string
+    type: object
+  weberror.Info:
+    properties:
+      code:
+        description: 错误码，用于前端依靠http状态码不能区别错误信息时用
+        type: integer
+      error:
+        description: 系统错误详细信息
+        type: string
+    type: object
+host: localhost:9090
+info:
+  contact: {}
+  description: This is a simple search engine.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: lgdSearch API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: username and pwd
+        in: body
+        name: LoginReq
+        required: true
+        schema:
+          $ref: '#/definitions/payloads.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payloads.LoginResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      tags:
+      - user
+  /register:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: username and pwd
+        in: body
+        name: RegisterReq
+        required: true
+        schema:
+          $ref: '#/definitions/payloads.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      tags:
+      - user
+  /users:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - user
+  /users/favorites:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payloads.GetFavoritesResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+  /users/favorites/{doc_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: doc_id in leveldb
+        in: path
+        name: doc_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: doc_id in leveldb
+        in: path
+        name: doc_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+  /users/logout:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - user
+  /users/nickname:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: nickname
+        in: body
+        name: UpdateNickname
+        required: true
+        schema:
+          $ref: '#/definitions/payloads.UpdateProfileReq'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - user
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payloads.GetProfileResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - user
+securityDefinitions:
+  Token:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

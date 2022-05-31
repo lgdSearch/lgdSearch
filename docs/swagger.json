@@ -1,0 +1,587 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a simple search engine.",
+        "title": "lgdSearch API",
+        "contact": {},
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:9090",
+    "paths": {
+        "/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "description": "username and pwd",
+                        "name": "LoginReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payloads.LoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payloads.LoginResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "description": "username and pwd",
+                        "name": "RegisterReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payloads.RegisterReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "delete": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/favorites": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payloads.GetFavoritesResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/favorites/{doc_id}": {
+            "put": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "doc_id in leveldb",
+                        "name": "doc_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "doc_id in leveldb",
+                        "name": "doc_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/logout": {
+            "delete": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/nickname": {
+            "patch": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "nickname",
+                        "name": "UpdateNickname",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payloads.UpdateProfileReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/profile": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payloads.GetProfileResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "payloads.GetFavoritesResp": {
+            "type": "object",
+            "properties": {
+                "doc_id": {
+                    "type": "integer"
+                },
+                "summary": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.GetProfileResp": {
+            "type": "object",
+            "properties": {
+                "nickname": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.LoginReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.LoginResp": {
+            "type": "object",
+            "required": [
+                "expire",
+                "token"
+            ],
+            "properties": {
+                "expire": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.RegisterReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.UpdateProfileReq": {
+            "type": "object",
+            "properties": {
+                "nickname": {
+                    "type": "string"
+                }
+            }
+        },
+        "weberror.Info": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "错误码，用于前端依靠http状态码不能区别错误信息时用",
+                    "type": "integer"
+                },
+                "error": {
+                    "description": "系统错误详细信息",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Token": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

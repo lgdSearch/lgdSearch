@@ -123,7 +123,7 @@ func TestLogout(t *testing.T) {
 	r := w.Result()
 	defer r.Body.Close()
 	body, _ := ioutil.ReadAll(r.Body)
-	if w.Code != 200 {
+	if w.Code != 204 {
 		t.Errorf("code:%d err:%v", w.Code, string(body))
 	}
 }
@@ -169,11 +169,8 @@ func TestGetProfile(t *testing.T) {
 
 func TestAddFavorite(t *testing.T) {
 	token := newUserToken("AddFavorite")
-	uri := "/users/favorites"
-	params := map[string]interface{}{
-		"doc_id": 123,
-	}
-	w := httprequest.Put(token, uri, params, engine)
+	uri := "/users/favorites/123"
+	w := httprequest.Put(token, uri, nil, engine)
 	r := w.Result()
 	defer r.Body.Close()
 	body, _ := ioutil.ReadAll(r.Body)
@@ -184,11 +181,8 @@ func TestAddFavorite(t *testing.T) {
 
 func TestDeleteFavorite(t *testing.T) {
 	token := newUserToken("DeleteFavorite")
-	uri := "/users/favorites"
-	params := map[string]interface{}{
-		"doc_id": 1,
-	}
-	w := httprequest.Delete(token, uri, params, engine)
+	uri := "/users/favorites/1"
+	w := httprequest.Delete(token, uri, nil, engine)
 	r := w.Result()
 	defer r.Body.Close()
 	body, _ := ioutil.ReadAll(r.Body)
