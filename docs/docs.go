@@ -198,6 +198,18 @@ var doc = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "greater than 0",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "greater than -1",
+                        "name": "offset",
+                        "in": "query"
                     }
                 ],
                 "responses": {

@@ -37,24 +37,24 @@ func Register(c *gin.Context) {
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		if err != nil {
 			logger.Logger.Errorf("[Register] failed to create user, err: %s", err.Error())
-			c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+			c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 			return
 		}
 		logger.Logger.Errorf("[Register] failed to create user, err: %s", "duplicate username")
-		c.JSON(http.StatusBadRequest, weberror.Info{Error: "duplicate username"})
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: "duplicate username"})
 		return
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logger.Logger.Errorf("[Register] failed to hash password, err: %s", err.Error())
-		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	req.Password = string(hash)
 	_, err = handler.CreateUser(req.Username, req.Password)
 	if err != nil {
 		logger.Logger.Errorf("[Register] failed to create user, err: %s", err.Error())
-		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
@@ -89,7 +89,7 @@ func UpdateNickname(c *gin.Context) {
 	err := handler.UpdateUserNickname(user.ID, req.Nickname)
 	if err != nil {
 		logger.Logger.Errorf("[UpdateProfile] failed to update user, err: %s", err.Error())
-		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
@@ -117,7 +117,7 @@ func DeleteAccount(c *gin.Context) {
 	err := handler.DeleteUser(user.ID)
 	if err != nil {
 		logger.Logger.Errorf("[DeleteAccount] failed to delete user, err: %s", err.Error())
-		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
@@ -145,7 +145,7 @@ func GetProfile(c *gin.Context) {
 	user, err := handler.QueryUser(user.ID, "")
 	if err != nil {
 		logger.Logger.Errorf("[GetProfile] failed to query user, err: %s", err.Error())
-		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusOK, &payloads.GetProfileResp{

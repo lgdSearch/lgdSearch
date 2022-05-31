@@ -1,14 +1,15 @@
 package handler_test
 
 import (
-	"testing"
-	"lgdSearch/pkg/db"
-	"gorm.io/gorm"
-	"gorm.io/driver/mysql"
-	"github.com/spf13/viper"
-	"lgdSearch/pkg/models"
-	"lgdSearch/handler"
 	"errors"
+	"lgdSearch/handler"
+	"lgdSearch/pkg/db"
+	"lgdSearch/pkg/models"
+	"testing"
+
+	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func TestMain(m *testing.M) {
@@ -28,9 +29,9 @@ func TestMain(m *testing.M) {
 	db.Engine.Where("1 = 1").Delete(&models.Favorite{})
 }
 
-func newUserId(name string) uint{
+func newUserId(name string) uint {
 	user := models.User{
-		Username: name+"_test",
+		Username: name + "_test",
 		Password: "test",
 		Favorites: []models.Favorite{
 			{DocId: 1},
@@ -85,13 +86,13 @@ func TestDeleteUser(t *testing.T) {
 	if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		if result.Error == nil {
 			t.Error("entry not deleted")
-		}else {
+		} else {
 			t.Error(result.Error.Error())
 		}
 	}
 }
 
-func TestAppendFavorite (t *testing.T) {
+func TestAppendFavorite(t *testing.T) {
 	id := newUserId("AppendFavorite")
 	err := handler.AppendFavorite(id, 123)
 	if err != nil {
@@ -99,7 +100,7 @@ func TestAppendFavorite (t *testing.T) {
 	}
 }
 
-func TestDeleteFavorite (t *testing.T) {
+func TestDeleteFavorite(t *testing.T) {
 	id := newUserId("DeleteFavorite")
 	err := handler.DeleteFavorite(id, 1)
 	if err != nil {
@@ -111,33 +112,47 @@ func TestDeleteFavorite (t *testing.T) {
 	}
 }
 
-func TestQueryFavorites (t *testing.T) {
+func TestQueryFavorites(t *testing.T) {
 	id := newUserId("QueryFavorites")
-	result, err := handler.QueryFavorites(id)
-	if err != nil{
+	result, err := handler.QueryFavorites(id, 10, 0)
+	if err != nil {
 		t.Error(err.Error())
 	}
 	if len(result) != 3 {
 		t.Error("incorrect number of entries")
 	}
+	result, err = handler.QueryFavorites(id, 10, 1)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if len(result) != 2 {
+		t.Error("incorrect number of entries")
+	}
+	result, err = handler.QueryFavorites(id, 1, 0)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if len(result) != 1 {
+		t.Error("incorrect number of entries")
+	}
 }
 
- func TestQueryFavorite (t *testing.T) {
+func TestQueryFavorite(t *testing.T) {
 	id := newUserId("QueryFavorite")
 	_, err := handler.QueryFavorite(id, 1)
-	if err != nil{
+	if err != nil {
 		t.Error(err.Error())
 	}
 	_, err = handler.QueryFavorite(id, 2)
-	if err != nil{
+	if err != nil {
 		t.Error(err.Error())
 	}
 	_, err = handler.QueryFavorite(id, 5)
-	if err != nil{
+	if err != nil {
 		t.Error(err.Error())
 	}
 	_, err = handler.QueryFavorite(id, 6)
-	if !errors.Is(err, gorm.ErrRecordNotFound){
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		t.Error(err.Error())
 	}
 }

@@ -19,9 +19,9 @@ func DeleteFavorite (userId, docId uint) error {
 	return result.Error
 }
 
-func QueryFavorites (userId uint) ([]models.Favorite, error) {
+func QueryFavorites (userId, limit, offset uint) ([]models.Favorite, error) {
 	favorites := make([]models.Favorite, 0, 10)
-	err := db.Engine.Model(&models.User{Model: gorm.Model{ID: userId}}).Association("Favorites").Find(&favorites)
+	err := db.Engine.Model(&models.User{Model: gorm.Model{ID: userId}}).Limit(int(limit)).Offset(int(offset)).Association("Favorites").Find(&favorites)
 	return favorites, err
 }
 
