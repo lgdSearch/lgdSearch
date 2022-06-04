@@ -17,12 +17,29 @@ func (n *Node) foreach(runes []rune, deep int) {
 		strings = append(strings, string(runes))
 		counts = append(counts, n.count)
 	}
-	for _, v := range n.child {
-		if len(runes) <= deep {
-			runes = append(runes, '我')
+	if n.child != nil {
+		for _, v := range n.child {
+			if len(runes) <= deep {
+				runes = append(runes, '我')
+			}
+			//if v == nil { // map 里面怎么有 nil ？ 估计是操作系统的锅，也不清楚，重启电脑就没了。。
+			//	log.Println(n.count, n.data, n.sons, n.father, n.size, n.max, n.child, key)
+			//	return
+			//}
+			runes[deep] = v.data
+			v.foreach(runes, deep+1)
 		}
-		runes[deep] = v.data
-		v.foreach(runes, deep+1)
+	} else {
+		for _, pair := range n.sons {
+			if len(runes) <= deep {
+				runes = append(runes, '我')
+			}
+			//if pair.value == nil {
+			//	return
+			//}
+			runes[deep] = pair.value.data
+			pair.value.foreach(runes, deep+1)
+		}
 	}
 }
 
@@ -57,11 +74,19 @@ func Write(trie *Trie, filepath string) {
 	writer := bufio.NewWriter(file)
 	str, counts := serialize(trie.root)
 	for pos, val := range str {
-		_, err := writer.WriteString(val + string(counts[pos]))
+		_, err := writer.WriteString(val)
+		err = writer.WriteByte('\n')
+		_, err = writer.WriteRune(counts[pos])
 		if err != nil {
 			return
 		}
 	}
+	err = writer.Flush()
+	if err != nil {
+		return
+	}
+	strings, counts = nil, nil
+	runtime.GC()
 }
 
 // Load 从文件中加载 trie 树
@@ -84,17 +109,18 @@ func Load(filepath string) *Trie {
 		if err == io.EOF {
 			break
 		}
+		str = str[:len(str)-1] // 去换行
 		val, _, err := reader.ReadRune()
-		go trie.insertRunesWithCount([]rune(str), val)
+		trie.insertRunesWithCount([]rune(str), val)
 	}
 
 	return trie
 }
 
-// 自动保存索引，60秒钟检测一次
+// 自动保存索引，120秒钟检测一次
 func (t *Trie) automaticFlush(filepath string) {
-	ticker := time.NewTicker(time.Second * 60)
-	size := 0
+	ticker := time.NewTicker(time.Second * 120)
+	size := t.size
 
 	for {
 		<-ticker.C
