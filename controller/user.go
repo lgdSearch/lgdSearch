@@ -21,7 +21,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        RegisterReq    body      payloads.RegisterReq  true  "username and pwd"
-// @Success      204
+// @Success      201
 // @Failure      400            {object}  weberror.Info               "Bad Request"
 // @Failure      404            {object}  weberror.Info               "Not Found"
 // @Failure      500            {object}  weberror.Info               "InternalServerError"
@@ -57,7 +57,7 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusCreated, nil)
 }
 
 // 修改昵称
@@ -110,7 +110,7 @@ func UpdateNickname(c *gin.Context) {
 func DeleteAccount(c *gin.Context) {
 	user := extractclaims.ToUser(jwt.ExtractClaims(c))
 	if user == nil {
-		logger.Logger.Errorf("[DeleteAccount] failed to delete user, err: %s", "failed to extract user info")
+		logger.Logger.Errorf("[DeleteAccount] failed to parse request, err: %s", "failed to extract user info")
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}
@@ -138,7 +138,7 @@ func DeleteAccount(c *gin.Context) {
 func GetProfile(c *gin.Context) {
 	user := extractclaims.ToUser(jwt.ExtractClaims(c))
 	if user == nil {
-		logger.Logger.Errorf("[GetProfile] failed to query user, err: %s", "failed to extract user info")
+		logger.Logger.Errorf("[GetProfile] failed to parse request, err: %s", "failed to extract user info")
 		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
 		return
 	}

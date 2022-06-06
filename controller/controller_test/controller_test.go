@@ -10,7 +10,7 @@ import (
 	"lgdSearch/pkg/models"
 	"lgdSearch/router"
 	"testing"
-
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -47,18 +47,17 @@ func TestMain(m *testing.M) {
 	m.Run()
 	db.Engine.Where("1 = 1").Delete(&models.User{})
 	db.Engine.Where("1 = 1").Delete(&models.Favorite{})
+	db.Engine.Where("1 = 1").Delete(&models.Doc{})
 }
 
-func newUserToken(name string) string {
+func newUserToken(name string) (uint, string) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte("test"), bcrypt.DefaultCost)
 	user := models.User{
 		Username: name + "_test",
 		Password: string(hash),
 		Nickname: "游客",
 		Favorites: []models.Favorite{
-			{DocId: 1},
-			{DocId: 2},
-			{DocId: 5},
+
 		},
 	}
 	db.Engine.Create(&user)
@@ -71,12 +70,30 @@ func newUserToken(name string) string {
 	r1 := w.Result()
 	defer r1.Body.Close()
 	if w.Code != 200 {
-		return ""
+		return 0, ""
 	}
 	body, _ := ioutil.ReadAll(r1.Body)
 	var resp payloads.LoginResp
 	json.Unmarshal(body, &resp)
-	return resp.Token
+	return user.ID, resp.Token
+}
+
+func newFavoriteId(userId uint, name string) uint {
+	favorite := models.Favorite{
+		UserId: userId,
+		Name: name,
+	}
+	db.Engine.Create(&favorite)
+	return favorite.ID
+}
+
+func newDocID(favId uint, docIndex uint) uint {
+	doc := models.Doc{
+		FavoriteId: favId,
+		DocIndex: docIndex,
+	}
+	db.Engine.Create(&doc)
+	return doc.ID
 }
 
 func TestRegister(t *testing.T) {
@@ -89,7 +106,7 @@ func TestRegister(t *testing.T) {
 	result := w.Result()
 	defer result.Body.Close()
 	body, _ := ioutil.ReadAll(result.Body)
-	if w.Code != 204 {
+	if w.Code != 201 {
 		t.Errorf("code:%d err:%v", w.Code, string(body))
 	}
 }
@@ -117,7 +134,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLogout(t *testing.T) {
-	token := newUserToken("Logout")
+	_, token := newUserToken("Logout")
 	uri := "/users/logout"
 	w := httprequest.Put(token, uri, nil, engine)
 	r := w.Result()
@@ -129,7 +146,7 @@ func TestLogout(t *testing.T) {
 }
 
 func TestUpdateNickname(t *testing.T) {
-	token := newUserToken("UpdateNickname")
+	_, token := newUserToken("UpdateNickname")
 	uri := "/users/nickname"
 	params := map[string]interface{}{
 		"nickname": "lgdSearch",
@@ -144,7 +161,7 @@ func TestUpdateNickname(t *testing.T) {
 }
 
 func TestDeleteAccount(t *testing.T) {
-	token := newUserToken("DeleteAccount")
+	_, token := newUserToken("DeleteAccount")
 	uri := "/users"
 	w := httprequest.Delete(token, uri, nil, engine)
 	r := w.Result()
@@ -156,7 +173,7 @@ func TestDeleteAccount(t *testing.T) {
 }
 
 func TestGetProfile(t *testing.T) {
-	token := newUserToken("GetProfile")
+	_, token := newUserToken("GetProfile")
 	uri := "/users/profile"
 	w := httprequest.Get(token, uri, nil, engine)
 	r := w.Result()
@@ -168,20 +185,24 @@ func TestGetProfile(t *testing.T) {
 }
 
 func TestAddFavorite(t *testing.T) {
-	token := newUserToken("AddFavorite")
-	uri := "/users/favorites/123"
-	w := httprequest.Put(token, uri, nil, engine)
+	_, token := newUserToken("AddFavorite")
+	uri := "/users/favorites"
+	params := map[string]interface{}{
+		"name": "TestAddFavorite",
+	}
+	w := httprequest.Put(token, uri, params, engine)
 	r := w.Result()
 	defer r.Body.Close()
 	body, _ := ioutil.ReadAll(r.Body)
-	if w.Code != 204 {
+	if w.Code != 201 {
 		t.Errorf("code:%d err:%v", w.Code, string(body))
 	}
 }
 
 func TestDeleteFavorite(t *testing.T) {
-	token := newUserToken("DeleteFavorite")
-	uri := "/users/favorites/1"
+	userId, token := newUserToken("DeleteFavorite")
+	favId := newFavoriteId(userId, "TestDeleteFavorite")
+	uri := "/users/favorites/" + strconv.Itoa(int(favId))
 	w := httprequest.Delete(token, uri, nil, engine)
 	r := w.Result()
 	defer r.Body.Close()
@@ -191,9 +212,68 @@ func TestDeleteFavorite(t *testing.T) {
 	}
 }
 
+func TestGetFavorite(t *testing.T) {
+	userId, token := newUserToken("TestGetFavorite")
+	favId := newFavoriteId(userId, "TestGetFavorite")
+	uri := "/users/favorites/" + strconv.Itoa(int(favId))
+	w := httprequest.Get(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 200 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
 func TestGetFavorites(t *testing.T) {
-	token := newUserToken("GetFavorites")
+	_, token := newUserToken("GetFavorites")
 	uri := "/users/favorites"
+	w := httprequest.Get(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 200 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestAddDoc(t *testing.T) {
+	userId, token := newUserToken("TestAddDoc")
+	favId := newFavoriteId(userId, "TestAddDoc")
+	uri := "/users/favorites/" + strconv.Itoa(int(favId)) + "/docs"
+	params := map[string]interface{}{
+		"doc_index": 1,
+	}
+	w := httprequest.Put(token, uri, params, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 201 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestDeleteDoc(t *testing.T) {
+	userId, token := newUserToken("TestDeleteDoc")
+	favId := newFavoriteId(userId, "TestDeleteDoc")
+	docId := newDocID(favId, 1)
+	uri := "/users/favorites/" + strconv.Itoa(int(favId)) + "/docs/" + strconv.Itoa(int(docId))
+	w := httprequest.Delete(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 204 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
+func TestGetDocs(t *testing.T) {
+	userId, token := newUserToken("TestGetDocs")
+	favId := newFavoriteId(userId, "TestGetDocs")
+	newDocID(favId, 1)
+	newDocID(favId, 2)
+	newDocID(favId, 3)
+	uri := "/users/favorites/" + strconv.Itoa(int(favId)) + "/docs"
 	w := httprequest.Get(token, uri, nil, engine)
 	r := w.Result()
 	defer r.Body.Close()

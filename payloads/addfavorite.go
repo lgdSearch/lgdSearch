@@ -1,5 +1,5 @@
 package payloads
 
 type AddFavoriteReq struct {
-	DocId 	uint `form:"doc_id" json:"doc_id" binging:"required"`
+	Name  string `form:"name" json:"name" binging:"required"`
 }
