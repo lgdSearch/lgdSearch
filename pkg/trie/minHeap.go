@@ -3,6 +3,8 @@ package trie
 type heapNode struct {
 	node *Node
 	deep int32 // deep represents the relationship with the pattern string
+	size int32
+	son  rune
 }
 
 func (node1 *heapNode) compare(node2 *heapNode) bool {

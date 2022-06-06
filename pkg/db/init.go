@@ -1,9 +1,9 @@
 package db
 
 import (
-	"gorm.io/gorm"
-	"gorm.io/driver/mysql"
 	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"lgdSearch/pkg/models"
 )
 
@@ -19,4 +19,3 @@ func Init() {
 	Engine.AutoMigrate(&models.Favorite{})
 	Engine.AutoMigrate(&models.Doc{})
 }
-

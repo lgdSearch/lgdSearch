@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"lgdSearch/pkg"
+	"lgdSearch/pkg/db"
 	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/trie"
 	"lgdSearch/router"
-	"lgdSearch/pkg/db"
-	"log"
+	"time"
 )
 
 // @title           lgdSearch API
@@ -39,13 +40,19 @@ func main() {
 	engine := router.Init()
 	db.Init()
 
+	PkgEngine := pkg.Engine{IndexPath: "./pkg/data"}
+	PkgEngine.Init()
+	defer PkgEngine.Close()
+
 	trie.InitHotSearch("./pkg/data/HotSearch.txt")
 	defer trie.GetHotSearch().Flush("./pkg/data/HotSearch.txt") // flush
-	log.Println("HotSearch Init Success!")
 
 	trie.InitTrie("./pkg/data/trieData.txt") // 载入 trie
 	defer trie.Tree.FlushIndex("./pkg/data/trieData.txt")
-	log.Println("Trie Init Success!")
 
-	engine.Run(":9090")
+	pkg.Set(&PkgEngine)
+
+	go engine.Run(":9090")
+
+	time.Sleep(time.Second * 30) // 运行时间
 }

@@ -113,7 +113,7 @@ func BenchmarkWrite1(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		write1("../data/trieData1.txt", str, counts)
+		write1("../data/trieData.txt", str, counts)
 	}
 }
 
@@ -234,7 +234,7 @@ func DecompressionBuffer(data []byte) *bytes.Buffer {
 
 func BenchmarkLoad1(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		Load1("../data/trieData1.txt")
+		Load1("../data/trieData.txt")
 	}
 }
 

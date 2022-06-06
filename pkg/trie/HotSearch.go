@@ -3,6 +3,7 @@ package trie
 import (
 	"container/heap"
 	"lgdSearch/pkg/utils"
+	"os"
 	"runtime"
 	"sync"
 	"time"
@@ -70,6 +71,7 @@ type HotSearch struct {
 var MyHotSearch *HotSearch
 
 func InitHotSearch(filepath string) {
+	GetHotSearch()
 	GetHotSearch().Load(filepath)
 	go GetHotSearch().InQueueExec()
 	go GetHotSearch().OutQueueExec()
@@ -152,9 +154,9 @@ func (hot *HotSearch) InQueueExec() {
 	}
 }
 
-// AutoReGetArray 60S 自动更新一次
+// AutoReGetArray 120S 自动更新一次
 func (hot *HotSearch) AutoReGetArray(filepath string) {
-	ticker := time.NewTicker(time.Second * 60)
+	ticker := time.NewTicker(time.Second * 120)
 	head := hot.searchQueue.head
 	size := hot.searchQueue.Size()
 
@@ -208,13 +210,19 @@ func (hot *HotSearch) Flush(filepath string) {
 	data := make([]queueNode, 0)
 	for head := hot.searchQueue.head; head != nil; head = head.Next {
 		data = append(data, queueNode{Text: head.Text, TimeMessage: head.TimeMessage, Next: nil})
+		if head == head.Next {
+			break
+		}
 	}
+	file, _ := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC, 0600)
+	file.Close()
+
 	utils.Write(&data, filepath)
 }
 
 func (hot *HotSearch) Load(filepath string) {
 	if filepath == "" {
-		filepath = "../data/HotSearch.txt"
+		filepath = "./pkg/data/HotSearch.txt"
 	}
 	data := make([]queueNode, 0)
 	utils.Read(&data, filepath)
