@@ -20,6 +20,66 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/book/{text}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "text",
+                        "name": "text",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.PageData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/handler.PageInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "consumes": [
@@ -47,6 +107,184 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/payloads.LoginResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/query": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "parameters": [
+                    {
+                        "description": "searchRequest",
+                        "name": "SearchRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/payloads.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.SearchResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/query/hotSearch": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/payloads.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/trie.HotSearchMessage"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/query/picture": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "parameters": [
+                    {
+                        "description": "searchPictureRequest",
+                        "name": "SearchRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/payloads.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.SearchPictureResult"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -768,6 +1006,201 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handler.PageData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.PageInfo": {
+            "type": "object",
+            "properties": {
+                "postList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.PostInfo"
+                    }
+                }
+            }
+        },
+        "handler.PostInfo": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Highlight": {
+            "type": "object",
+            "properties": {
+                "postTag": {
+                    "description": "高亮后缀",
+                    "type": "string"
+                },
+                "preTag": {
+                    "description": "高亮前缀",
+                    "type": "string"
+                }
+            }
+        },
+        "models.ResponseDoc": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "score": {
+                    "description": "得分",
+                    "type": "number"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ResponseUrl": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "number"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "thumbnailUrl": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SearchPictureResult": {
+            "type": "object",
+            "properties": {
+                "documents": {
+                    "description": "缩略图 Url",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ResponseUrl"
+                    }
+                },
+                "limit": {
+                    "description": "页大小",
+                    "type": "integer"
+                },
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "pageCount": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "time": {
+                    "description": "查询用时",
+                    "type": "number"
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer"
+                },
+                "words": {
+                    "description": "搜索关键词",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.SearchRequest": {
+            "type": "object",
+            "properties": {
+                "filterWord": {
+                    "description": "关键词过滤",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "highlight": {
+                    "description": "关键词高了",
+                    "$ref": "#/definitions/models.Highlight"
+                },
+                "limit": {
+                    "description": "每页大小，最大1000，超过报错",
+                    "type": "integer"
+                },
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "query": {
+                    "description": "搜索关键词",
+                    "type": "string"
+                }
+            }
+        },
+        "models.SearchResult": {
+            "type": "object",
+            "properties": {
+                "documents": {
+                    "description": "文档",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ResponseDoc"
+                    }
+                },
+                "limit": {
+                    "description": "页大小",
+                    "type": "integer"
+                },
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "pageCount": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "related": {
+                    "description": "相关搜索",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "time": {
+                    "description": "查询用时",
+                    "type": "number"
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer"
+                },
+                "words": {
+                    "description": "搜索关键词",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "payloads.AddDocReq": {
             "type": "object",
             "properties": {
@@ -865,10 +1298,33 @@ const docTemplate = `{
                 }
             }
         },
+        "payloads.Result": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "boolean"
+                }
+            }
+        },
         "payloads.UpdateProfileReq": {
             "type": "object",
             "properties": {
                 "nickname": {
+                    "type": "string"
+                }
+            }
+        },
+        "trie.HotSearchMessage": {
+            "type": "object",
+            "properties": {
+                "num": {
+                    "type": "integer"
+                },
+                "text": {
                     "type": "string"
                 }
             }

@@ -38,10 +38,6 @@ const (
 	BadgerShard = 10
 
 	BoltBucketSize = 100
-
-	//IndexPath is the default engine data storage address
-	//The leveldb data file and AVL data file will be stored here
-	IndexPath = "./data"
 )
 
 type Option struct {
@@ -150,8 +146,6 @@ func (e *Engine) Init() {
 	//初始化完成，自动检测索引并持久化到磁盘
 	go e.automaticFlush()
 }
-
-var MapKeyIds map[uint32]*[]models.StorageId
 
 func (e *Engine) IndexDocument(doc models.IndexDoc) {
 	e.AddDocumentWorkerChan <- doc
@@ -416,15 +410,24 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 		log.Println("分词数: ", len(words))
 	}
 
+	var lock sync.Mutex
+	var wg sync.WaitGroup
+	wg.Add(len(words))
+
 	var fastSort pagination.FastSort
 	_time := utils.ExecTime(func() {
 		var allValues = make([]*models.SliceItem, 0)
 
 		for _, word := range words {
-			e.SimpleSearch(word, utils.StringToInt(word), func(values []*models.SliceItem) {
+			go e.SimpleSearch(word, utils.StringToInt(word), func(values []*models.SliceItem) {
+				lock.Lock()
 				allValues = append(allValues, values...)
+				lock.Unlock()
+				wg.Done()
 			})
 		}
+
+		wg.Wait()
 		fastSort = pagination.FastSort{ScoreMap: make(map[uint32]float32, int(float32(len(allValues))*1.5))} // 预分配空间，优化效率
 		fastSort.Add(allValues)
 	})
@@ -441,7 +444,7 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 		Page:      request.Page,
 		Limit:     request.Limit,
 		Words:     words,
-		Documents: make([]models.ResponseDoc, request.Limit),
+		Documents: nil,
 		Related:   trie.Tree.Search([]rune(request.Query)),
 	}
 
@@ -477,10 +480,15 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 
 			start, end := pager.GetPage(request.Page)
 			log.Println("start: ", start, " --- end: ", end)
+			if start == -1 {
+				return
+			}
 			items := resultIds[start : end+1]
 			if e.IsDebug {
 				log.Println("Page: ", "start ", start, "end ", end)
 			}
+
+			result.Documents = make([]models.ResponseDoc, len(items))
 
 			var wg sync.WaitGroup
 			wg.Add(len(items))
@@ -593,15 +601,24 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 		log.Println("分词数: ", len(words))
 	}
 
+	var lock sync.Mutex
+	var wg sync.WaitGroup
+	wg.Add(len(words))
+
 	var fastSort pagination.FastSort
 	_time := utils.ExecTime(func() {
 		var allValues = make([]*models.SliceItem, 0)
 
 		for _, word := range words {
-			e.SimpleSearch(word, utils.StringToInt(word), func(values []*models.SliceItem) {
+			go e.SimpleSearch(word, utils.StringToInt(word), func(values []*models.SliceItem) {
+				lock.Lock()
 				allValues = append(allValues, values...)
+				lock.Unlock()
+				wg.Done()
 			})
 		}
+
+		wg.Wait()
 		fastSort = pagination.FastSort{ScoreMap: make(map[uint32]float32, int(float32(len(allValues))*1.5))} // 预分配空间，优化效率
 		fastSort.Add(allValues)
 	})
@@ -618,7 +635,7 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 		Page:      request.Page,
 		Limit:     request.Limit,
 		Words:     words,
-		Documents: make([]models.ResponseUrl, request.Limit),
+		Documents: nil,
 	}
 
 	_time = utils.ExecTime(func() {
@@ -642,11 +659,16 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 		if pager.PageCount != 0 {
 
 			start, end := pager.GetPage(request.Page)
+			if start == -1 {
+				return
+			}
+
 			items := resultIds[start : end+1]
 			if e.IsDebug {
 				log.Println("Page: ", "start ", start, "end ", end)
 			}
 
+			result.Documents = make([]models.ResponseUrl, len(items))
 			var wg sync.WaitGroup
 			wg.Add(len(items)) // 并发上传图片
 
