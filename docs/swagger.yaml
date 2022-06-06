@@ -1,4 +1,23 @@
 definitions:
+  payloads.AddDocReq:
+    properties:
+      doc_index:
+        type: integer
+    type: object
+  payloads.AddFavoriteReq:
+    properties:
+      name:
+        type: string
+    type: object
+  payloads.GetDocsResp:
+    properties:
+      doc_id:
+        type: integer
+      doc_index:
+        type: integer
+      summary:
+        type: string
+    type: object
   payloads.GetFavoritesResp:
     properties:
       doc_id:
@@ -113,7 +132,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
+        "201":
           description: ""
         "400":
           description: Bad Request
@@ -201,7 +220,43 @@ paths:
       - Token: []
       tags:
       - favorite
-  /users/favorites/{doc_id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: name
+        in: body
+        name: AddFavoriteReq
+        required: true
+        schema:
+          $ref: '#/definitions/payloads.AddFavoriteReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+  /users/favorites/{fav_id}:
     delete:
       consumes:
       - application/json
@@ -211,9 +266,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: doc_id in leveldb
+      - description: fav_id
         in: path
-        name: doc_id
+        name: fav_id
         required: true
         type: integer
       produces:
@@ -221,6 +276,89 @@ paths:
       responses:
         "204":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: fav_id
+        in: path
+        name: fav_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payloads.GetFavoritesResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+  /users/favorites/{fav_id}/docs:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: fav_id
+        in: path
+        name: fav_id
+        required: true
+        type: integer
+      - description: greater than 0
+        in: query
+        name: limit
+        type: integer
+      - description: greater than -1
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payloads.GetDocsResp'
         "400":
           description: Bad Request
           schema:
@@ -246,7 +384,54 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: doc_id in leveldb
+      - description: fav_id
+        in: path
+        name: fav_id
+        required: true
+        type: integer
+      - description: include doc_index
+        in: body
+        name: AddDocReq
+        required: true
+        schema:
+          $ref: '#/definitions/payloads.AddDocReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+  /users/favorites/{fav_id}/docs/{doc_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: fav_id
+        in: path
+        name: fav_id
+        required: true
+        type: integer
+      - description: doc_id
         in: path
         name: doc_id
         required: true

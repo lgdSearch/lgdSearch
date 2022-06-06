@@ -1,0 +1,20 @@
+syntax = "proto3";
+option cc_generic_services = true;
+
+service GrpcService {
+    rpc getFeature (Request) returns (Response) {}
+}
+
+message Request {
+    string image = 1;
+}
+
+message Response {
+    message R1 {
+        message R0 {
+            repeated double a = 1;
+        }
+        repeated R0 b = 1;
+    }
+    repeated R1 c = 1;
+}

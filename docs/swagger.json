@@ -85,7 +85,7 @@
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "201": {
                         "description": ""
                     },
                     "400": {
@@ -222,9 +222,7 @@
                         }
                     }
                 }
-            }
-        },
-        "/users/favorites/{doc_id}": {
+            },
             "put": {
                 "security": [
                     {
@@ -249,16 +247,78 @@
                         "required": true
                     },
                     {
+                        "description": "name",
+                        "name": "AddFavoriteReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payloads.AddFavoriteReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/favorites/{fav_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
-                        "description": "doc_id in leveldb",
-                        "name": "doc_id",
+                        "description": "fav_id",
+                        "name": "fav_id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": ""
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payloads.GetFavoritesResp"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -305,7 +365,207 @@
                     },
                     {
                         "type": "integer",
-                        "description": "doc_id in leveldb",
+                        "description": "fav_id",
+                        "name": "fav_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/favorites/{fav_id}/docs": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "fav_id",
+                        "name": "fav_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "greater than 0",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "greater than -1",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payloads.GetDocsResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "fav_id",
+                        "name": "fav_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "include doc_index",
+                        "name": "AddDocReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payloads.AddDocReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/favorites/{fav_id}/docs/{doc_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "fav_id",
+                        "name": "fav_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "doc_id",
                         "name": "doc_id",
                         "in": "path",
                         "required": true
@@ -500,6 +760,36 @@
         }
     },
     "definitions": {
+        "payloads.AddDocReq": {
+            "type": "object",
+            "properties": {
+                "doc_index": {
+                    "type": "integer"
+                }
+            }
+        },
+        "payloads.AddFavoriteReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.GetDocsResp": {
+            "type": "object",
+            "properties": {
+                "doc_id": {
+                    "type": "integer"
+                },
+                "doc_index": {
+                    "type": "integer"
+                },
+                "summary": {
+                    "type": "string"
+                }
+            }
+        },
         "payloads.GetFavoritesResp": {
             "type": "object",
             "properties": {

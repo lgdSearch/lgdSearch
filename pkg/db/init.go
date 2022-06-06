@@ -17,4 +17,5 @@ func Init() {
 	}
 	Engine.AutoMigrate(&models.User{})
 	Engine.AutoMigrate(&models.Favorite{})
+	Engine.AutoMigrate(&models.Doc{})
 }

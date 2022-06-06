@@ -7,8 +7,8 @@ import (
 type Favorite struct {
 	gorm.Model
 	UserId 		uint
-	DocId 		uint
-	Summary		string
+	Name        string
+	Docs 		[]Doc
 }
 
 func (*Favorite) TableName() string{
