@@ -3,10 +3,8 @@ module lgdSearch
 go 1.16
 
 require (
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.4+incompatible
 	github.com/appleboy/gin-jwt/v2 v2.8.0
-	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/boltdb/bolt v1.3.1
 	github.com/dgraph-io/badger/v3 v3.2103.2
@@ -29,12 +27,8 @@ require (
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.11.0
-	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
-	github.com/swaggo/gin-swagger v1.4.3 // indirect
 	github.com/swaggo/swag v1.8.2
-	github.com/syndtr/goleveldb v1.0.0
 	github.com/tebeka/strftime v0.1.5 // indirect
-	github.com/urfave/cli/v2 v2.8.1 // indirect
 	github.com/wangbin/jiebago v0.3.2
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
