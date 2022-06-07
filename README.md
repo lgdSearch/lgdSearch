@@ -33,8 +33,8 @@
     |-- middleware             gin中间件
     |-- payloads               接口req与resp结构体
     |-- pkg
-    |   |-- data
-    |   |-- db
+    |   |-- data               存储各类数据
+    |   |-- db                 数据库操作的封装
     |   |   |-- badgerStorage
     |   |   |-- boltStorage
     |   |-- extractclaims      jwtMapClaims解析
@@ -42,11 +42,11 @@
     |   |-- logger             日志持久化
     |   |-- models             数据库表结构
     |   |-- pagination
-    |   |-- trie
+    |   |-- trie               各类树的实现
     |   |-- utils
-    |   |   |-- colf
-    |   |       |-- doc
-    |   |       |-- keyIds
+    |   |   |-- colf           colf序列化工具
+    |   |       |-- doc        doc序列化
+    |   |       |-- keyIds     keyIds序列化
     |   |-- vgg                图片特征值提取
     |   |-- weberror           接口返回错误用时使用的结构体
     |-- router                 gin接口路由
