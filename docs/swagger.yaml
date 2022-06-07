@@ -225,6 +225,13 @@ definitions:
       state:
         type: boolean
     type: object
+  payloads.UpdateFavoriteNameReq:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   payloads.UpdateProfileReq:
     properties:
       nickname:
@@ -625,6 +632,47 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/payloads.GetFavoritesResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: fav_id
+        in: path
+        name: fav_id
+        required: true
+        type: integer
+      - description: name
+        in: body
+        name: AddFavoriteReq
+        required: true
+        schema:
+          $ref: '#/definitions/payloads.UpdateFavoriteNameReq'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
         "400":
           description: Bad Request
           schema:
