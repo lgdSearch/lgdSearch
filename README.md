@@ -6,7 +6,7 @@
 
 ## 文档
 
-+ API 使用 [swagger](https://editor.swagger.io/) 查看
++ [API文档](./docs/swagger.yaml) 使用 [swagger](https://editor.swagger.io/) 查看
 + [搜文档|搜图片](./docs/search.md)
 + [相关搜索](./docs/related_search.md)
 + [持久化](./docs/storage.md)
@@ -22,3 +22,32 @@
 + boltdb
 + badgerdb
 + colf序列化
+
+## 目录结构
+```
+|-- lgdSearch
+    |-- controller             http接口
+    |-- docs                   文档
+    |-- handler                CRUD操作
+    |-- logs                   持久化日志
+    |-- middleware             gin中间件
+    |-- payloads               接口req与resp结构体
+    |-- pkg
+    |   |-- data
+    |   |-- db
+    |   |   |-- badgerStorage
+    |   |   |-- boltStorage
+    |   |-- extractclaims      jwtMapClaims解析
+    |   |-- httprequest        http请求构建（测试用）
+    |   |-- logger             日志持久化
+    |   |-- models             数据库表结构
+    |   |-- pagination
+    |   |-- trie
+    |   |-- utils
+    |   |   |-- colf
+    |   |       |-- doc
+    |   |       |-- keyIds
+    |   |-- vgg                图片特征值提取
+    |   |-- weberror           接口返回错误用时使用的结构体
+    |-- router                 gin接口路由
+```

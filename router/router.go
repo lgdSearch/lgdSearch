@@ -36,7 +36,6 @@ func Init() *gin.Engine {
 	engine.POST("/query", controller.Query)                // 查询
 	engine.POST("/query/picture", controller.QueryPicture) // 查询图片
 	engine.GET("/query/hotSearch", controller.HotSearch)   // 热搜
-	engine.GET("/test/say_hello", controller.SayHello)
 	engine.GET("/book/:text", controller.GetRelatedSearch) // 相关搜索
 	return engine
 }
