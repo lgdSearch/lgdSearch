@@ -1,4 +1,139 @@
 definitions:
+  handler.PageData:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  handler.PageInfo:
+    properties:
+      postList:
+        items:
+          $ref: '#/definitions/handler.PostInfo'
+        type: array
+    type: object
+  handler.PostInfo:
+    properties:
+      text:
+        type: string
+    type: object
+  models.Highlight:
+    properties:
+      postTag:
+        description: 高亮后缀
+        type: string
+      preTag:
+        description: 高亮前缀
+        type: string
+    type: object
+  models.ResponseDoc:
+    properties:
+      id:
+        type: integer
+      score:
+        description: 得分
+        type: number
+      text:
+        type: string
+      url:
+        type: string
+    type: object
+  models.ResponseUrl:
+    properties:
+      id:
+        type: integer
+      score:
+        type: number
+      text:
+        type: string
+      thumbnailUrl:
+        type: string
+      url:
+        type: string
+    type: object
+  models.SearchPictureResult:
+    properties:
+      documents:
+        description: 缩略图 Url
+        items:
+          $ref: '#/definitions/models.ResponseUrl'
+        type: array
+      limit:
+        description: 页大小
+        type: integer
+      page:
+        description: 页码
+        type: integer
+      pageCount:
+        description: 总页数
+        type: integer
+      time:
+        description: 查询用时
+        type: number
+      total:
+        description: 总数
+        type: integer
+      words:
+        description: 搜索关键词
+        items:
+          type: string
+        type: array
+    type: object
+  models.SearchRequest:
+    properties:
+      filterWord:
+        description: 关键词过滤
+        items:
+          type: string
+        type: array
+      highlight:
+        $ref: '#/definitions/models.Highlight'
+        description: 关键词高了
+      limit:
+        description: 每页大小，最大1000，超过报错
+        type: integer
+      page:
+        description: 页码
+        type: integer
+      query:
+        description: 搜索关键词
+        type: string
+    type: object
+  models.SearchResult:
+    properties:
+      documents:
+        description: 文档
+        items:
+          $ref: '#/definitions/models.ResponseDoc'
+        type: array
+      limit:
+        description: 页大小
+        type: integer
+      page:
+        description: 页码
+        type: integer
+      pageCount:
+        description: 总页数
+        type: integer
+      related:
+        description: 相关搜索
+        items:
+          type: string
+        type: array
+      time:
+        description: 查询用时
+        type: number
+      total:
+        description: 总数
+        type: integer
+      words:
+        description: 搜索关键词
+        items:
+          type: string
+        type: array
+    type: object
   payloads.AddDocReq:
     properties:
       doc_index:
@@ -82,9 +217,24 @@ definitions:
     - password
     - username
     type: object
+  payloads.Result:
+    properties:
+      data: {}
+      message:
+        type: string
+      state:
+        type: boolean
+    type: object
   payloads.UpdateProfileReq:
     properties:
       nickname:
+        type: string
+    type: object
+  trie.HotSearchMessage:
+    properties:
+      num:
+        type: integer
+      text:
         type: string
     type: object
   weberror.Info:
@@ -106,6 +256,42 @@ info:
   title: lgdSearch API
   version: "1.0"
 paths:
+  /book/{text}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: text
+        in: path
+        name: text
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.PageData'
+            - properties:
+                data:
+                  $ref: '#/definitions/handler.PageInfo'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      tags:
+      - search
   /login:
     post:
       consumes:
@@ -138,6 +324,112 @@ paths:
             $ref: '#/definitions/weberror.Info'
       tags:
       - user
+  /query:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: searchRequest
+        in: body
+        name: SearchRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/payloads.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.SearchResult'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      tags:
+      - search
+  /query/hotSearch:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/payloads.Result'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/trie.HotSearchMessage'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      tags:
+      - search
+  /query/picture:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: searchPictureRequest
+        in: body
+        name: SearchRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/payloads.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.SearchPictureResult'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      tags:
+      - search
   /register:
     put:
       consumes:

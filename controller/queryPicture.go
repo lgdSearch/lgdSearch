@@ -9,6 +9,17 @@ import (
 	"net/http"
 )
 
+// 搜图
+// @Tags  search
+// @Description
+// @Accept   json
+// @Produce  json
+// @Param     SearchRequest    body      models.SearchRequest  true "searchPictureRequest"
+// @Success  200  {object}  payloads.Result{data=models.SearchPictureResult}
+// @Failure  400  {object}  weberror.Info  "Bad Request"
+// @Failure  404  {object}  weberror.Info  "Not Found"
+// @Failure  500  {object}  weberror.Info  "InternalServerError"
+// @Router   /query/picture [post]
 func QueryPicture(c *gin.Context) {
 	var request = &models.SearchRequest{}
 	err := c.BindJSON(&request)

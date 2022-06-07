@@ -24,6 +24,13 @@ func (s *SearchRequest) GetAndSetDefault() *SearchRequest {
 		s.Page = 1
 	}
 
+	if s.Highlight == nil {
+		s.Highlight = &Highlight{
+			PreTag:  "<span style=\"color: red;\">",
+			PostTag: "</span>",
+		}
+	}
+
 	return s
 }
 

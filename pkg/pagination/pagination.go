@@ -40,7 +40,8 @@ func (p *Pagination) GetPage(page int) (s int, e int) {
 	end := (start - 1) + p.Limit
 
 	if start > p.Total {
-		return 0, p.Total - 1
+		//return 0, p.Total - 1
+		return -1, -1
 	}
 	if end > p.Total {
 		end = p.Total - 1

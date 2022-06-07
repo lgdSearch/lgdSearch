@@ -54,5 +54,5 @@ func main() {
 
 	go engine.Run(":9090")
 
-	time.Sleep(time.Second * 30) // 运行时间
+	time.Sleep(time.Second * 60) // 运行时间
 }
