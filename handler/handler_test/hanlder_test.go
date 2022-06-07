@@ -5,8 +5,9 @@ import (
 	"lgdSearch/handler"
 	"lgdSearch/pkg/db"
 	"lgdSearch/pkg/models"
-	"testing"
 	"strings"
+	"testing"
+
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -43,7 +44,7 @@ func newUserId(name string) uint {
 func newFavoriteId(userId uint, name string) uint {
 	favorite := models.Favorite{
 		UserId: userId,
-		Name: name,
+		Name:   name,
 	}
 	db.Engine.Create(&favorite)
 	return favorite.ID
@@ -52,7 +53,7 @@ func newFavoriteId(userId uint, name string) uint {
 func newDocID(favId uint, docIndex uint) uint {
 	doc := models.Doc{
 		FavoriteId: favId,
-		DocIndex: docIndex,
+		DocIndex:   docIndex,
 	}
 	db.Engine.Create(&doc)
 	return doc.ID
@@ -138,21 +139,21 @@ func TestQueryFavorites(t *testing.T) {
 	newFavoriteId(id, "QueryFavorites")
 	newFavoriteId(id, "QueryFavorites")
 	newFavoriteId(id, "QueryFavorites")
-	result, _,  err := handler.QueryFavorites(id, 10, 0)
+	result, _, err := handler.QueryFavorites(id, 10, 0)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if len(result) != 3 {
 		t.Error("incorrect number of entries")
 	}
-	result, _,  err = handler.QueryFavorites(id, 10, 1)
+	result, _, err = handler.QueryFavorites(id, 10, 1)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if len(result) != 2 {
 		t.Error("incorrect number of entries")
 	}
-	result, _,  err = handler.QueryFavorites(id, 1, 0)
+	result, _, err = handler.QueryFavorites(id, 1, 0)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -219,7 +220,7 @@ func TestQueryDoc(t *testing.T) {
 	}
 }
 
-func TestQueryDocs( t *testing.T) {
+func TestQueryDocs(t *testing.T) {
 	userId := newUserId("TestQueryDoc")
 	favId := newFavoriteId(userId, "TestQueryDoc")
 	newDocID(favId, 1)
@@ -245,5 +246,22 @@ func TestQueryDocs( t *testing.T) {
 	}
 	if len(docs) != 1 {
 		t.Error("number of docs incorrect")
+	}
+}
+
+func TestUpdateFavoriteName(t *testing.T) {
+	id := newUserId("TestUpdateFavoriteName")
+	favId := newFavoriteId(id, "TestUpdateFavoriteName")
+	err := handler.UpdateFavoriteName(id, favId, "TestUpdateFavoriteName_2")
+	if err != nil {
+		t.Error(err.Error())
+	}
+	fav := models.Favorite{}
+	result := db.Engine.First(&fav, favId)
+	if result.Error != nil {
+		t.Error(result.Error.Error())
+	}
+	if fav.Name != "TestUpdateFavoriteName_2" {
+		t.Error("name incorrect")
 	}
 }

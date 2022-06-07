@@ -199,6 +199,22 @@ func TestAddFavorite(t *testing.T) {
 	}
 }
 
+func TestUpdateFavoriteName(t *testing.T) {
+	userId, token := newUserToken("TestUpdateFavoriteName")
+	favId := newFavoriteId(userId, "TestUpdateFavoriteName")
+	uri := "/users/favorites/" + strconv.Itoa(int(favId)) + "/name"
+	params := map[string]interface{}{
+		"name": "TestUpdateFavoriteName_3",
+	}
+	w := httprequest.Patch(token, uri, params, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 204 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+}
+
 func TestDeleteFavorite(t *testing.T) {
 	userId, token := newUserToken("DeleteFavorite")
 	favId := newFavoriteId(userId, "TestDeleteFavorite")

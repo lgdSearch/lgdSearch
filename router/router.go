@@ -25,6 +25,7 @@ func Init() *gin.Engine {
 		favorites := users.Group("/favorites")
 		{
 			favorites.PUT("", controller.AddFavorite)
+			favorites.PATCH("/:fav_id/name", controller.UpdateFavoriteName)
 			favorites.DELETE("/:fav_id", controller.DeleteFavorite)
 			favorites.GET("/:fav_id", controller.GetFavorite)
 			favorites.GET("", controller.GetFavorites)

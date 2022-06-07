@@ -61,6 +61,48 @@ func AddFavorite(c *gin.Context) {
 	c.JSON(http.StatusCreated, nil)
 }
 
+// 更新收藏夹名字
+// @Tags favorite
+// @Description
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string                          true  "userToken"
+// @Param        fav_id         path      uint                            true  "fav_id"
+// @Param        AddFavoriteReq body      payloads.UpdateFavoriteNameReq  true  "name"
+// @Success      204
+// @Failure      400            {object}  weberror.Info                         "Bad Request"
+// @Failure      404            {object}  weberror.Info                         "Not Found"
+// @Failure      500            {object}  weberror.Info                         "InternalServerError"
+// @Router       /users/favorites/{fav_id} [patch]
+// @Security     Token
+func UpdateFavoriteName(c *gin.Context) {
+	var req payloads.UpdateFavoriteNameReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Errorf("[UpdateFavoriteName] failed to parse request, err: %s", err.Error())
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	favId, err := strconv.ParseUint(c.Param("fav_id"), 10, 32)
+	if err != nil {
+		logger.Logger.Errorf("[UpdateFavoriteName] failed to parse request, err: %s", err.Error())
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[UpdateFavoriteName] failed to parse request, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+	err = handler.UpdateFavoriteName(user.ID, uint(favId), req.Name)
+	if err != nil {
+		logger.Logger.Errorf("[UpdateFavoriteName] failed to add favorite, err: %s", err.Error())
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+	c.JSON(http.StatusNoContent, nil)
+}
+
 // 删除收藏夹
 // @Tags favorite
 // @Description
