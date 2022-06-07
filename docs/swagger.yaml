@@ -9,7 +9,7 @@ definitions:
       name:
         type: string
     type: object
-  payloads.GetDocsResp:
+  payloads.Doc:
     properties:
       doc_id:
         type: integer
@@ -17,13 +17,33 @@ definitions:
         type: integer
       summary:
         type: string
+      title:
+        type: string
+    type: object
+  payloads.Favorite:
+    properties:
+      fav_id:
+        type: integer
+      name:
+        type: string
+    type: object
+  payloads.GetDocsResp:
+    properties:
+      docs:
+        items:
+          $ref: '#/definitions/payloads.Doc'
+        type: array
+      total:
+        type: integer
     type: object
   payloads.GetFavoritesResp:
     properties:
-      doc_id:
+      favs:
+        items:
+          $ref: '#/definitions/payloads.Favorite'
+        type: array
+      total:
         type: integer
-      summary:
-        type: string
     type: object
   payloads.GetProfileResp:
     properties:

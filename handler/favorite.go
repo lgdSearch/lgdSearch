@@ -21,10 +21,14 @@ func DeleteFavorite (favId uint) error {
 	return result.Error
 }
 
-func QueryFavorites (userId, limit, offset uint) ([]models.Favorite, error) {
+func QueryFavorites (userId, limit, offset uint) ([]models.Favorite, int64, error) {
 	favorites := make([]models.Favorite, 0, 10)
 	err := db.Engine.Model(&models.User{Model: gorm.Model{ID: userId}}).Limit(int(limit)).Offset(int(offset)).Association("Favorites").Find(&favorites)
-	return favorites, err
+	if err != nil {
+		return favorites, 0, err
+	}
+	total := db.Engine.Model(&models.User{Model: gorm.Model{ID: userId}}).Association("Favorites").Count()
+	return favorites, total, err
 }
 
 func QueryFavorite (favId uint, name string) (*models.Favorite, error) {
@@ -66,8 +70,12 @@ func QueryDoc (docId uint, docIndex uint) (*models.Doc, error) {
 	return &docs, result.Error
 }
 
-func QueryDocs (favId, limit, offset uint) ([]models.Doc, error) {
+func QueryDocs (favId, limit, offset uint) ([]models.Doc, int64, error) {
 	docs := make([]models.Doc, 0, 10)
 	err := db.Engine.Model(&models.Favorite{Model: gorm.Model{ID: favId}}).Limit(int(limit)).Offset(int(offset)).Association("Docs").Find(&docs)
-	return docs, err
+	if err != nil {
+		return docs, 0, err
+	}
+	total := db.Engine.Model(&models.Favorite{Model: gorm.Model{ID: favId}}).Association("Docs").Count()
+	return docs, total, err
 }

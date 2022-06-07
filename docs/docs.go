@@ -784,7 +784,7 @@ const docTemplate = `{
                 }
             }
         },
-        "payloads.GetDocsResp": {
+        "payloads.Doc": {
             "type": "object",
             "properties": {
                 "doc_id": {
@@ -795,17 +795,48 @@ const docTemplate = `{
                 },
                 "summary": {
                     "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.Favorite": {
+            "type": "object",
+            "properties": {
+                "fav_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.GetDocsResp": {
+            "type": "object",
+            "properties": {
+                "docs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/payloads.Doc"
+                    }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
         "payloads.GetFavoritesResp": {
             "type": "object",
             "properties": {
-                "doc_id": {
-                    "type": "integer"
+                "favs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/payloads.Favorite"
+                    }
                 },
-                "summary": {
-                    "type": "string"
+                "total": {
+                    "type": "integer"
                 }
             }
         },

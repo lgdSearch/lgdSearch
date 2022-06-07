@@ -138,21 +138,21 @@ func TestQueryFavorites(t *testing.T) {
 	newFavoriteId(id, "QueryFavorites")
 	newFavoriteId(id, "QueryFavorites")
 	newFavoriteId(id, "QueryFavorites")
-	result, err := handler.QueryFavorites(id, 10, 0)
+	result, _,  err := handler.QueryFavorites(id, 10, 0)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if len(result) != 3 {
 		t.Error("incorrect number of entries")
 	}
-	result, err = handler.QueryFavorites(id, 10, 1)
+	result, _,  err = handler.QueryFavorites(id, 10, 1)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if len(result) != 2 {
 		t.Error("incorrect number of entries")
 	}
-	result, err = handler.QueryFavorites(id, 1, 0)
+	result, _,  err = handler.QueryFavorites(id, 1, 0)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -225,11 +225,25 @@ func TestQueryDocs( t *testing.T) {
 	newDocID(favId, 1)
 	newDocID(favId, 2)
 	newDocID(favId, 3)
-	docs, err := handler.QueryDocs(favId, 10, 0)
+	docs, _, err := handler.QueryDocs(favId, 10, 0)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if len(docs) != 3 {
+		t.Error("number of docs incorrect")
+	}
+	docs, _, err = handler.QueryDocs(favId, 10, 1)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if len(docs) != 2 {
+		t.Error("number of docs incorrect")
+	}
+	docs, _, err = handler.QueryDocs(favId, 1, 0)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if len(docs) != 1 {
 		t.Error("number of docs incorrect")
 	}
 }

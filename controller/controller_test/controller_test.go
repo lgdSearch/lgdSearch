@@ -273,12 +273,17 @@ func TestGetDocs(t *testing.T) {
 	newDocID(favId, 1)
 	newDocID(favId, 2)
 	newDocID(favId, 3)
-	uri := "/users/favorites/" + strconv.Itoa(int(favId)) + "/docs"
+	uri := "/users/favorites/" + strconv.Itoa(int(favId)) + "/docs" + "?offset=1"
 	w := httprequest.Get(token, uri, nil, engine)
 	r := w.Result()
 	defer r.Body.Close()
 	body, _ := ioutil.ReadAll(r.Body)
 	if w.Code != 200 {
 		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+	doc := payloads.GetDocsResp{}
+	json.Unmarshal(body, &doc)
+	if len(doc.Docs) != 2 {
+		t.Error("offset incorrect")
 	}
 }

@@ -137,14 +137,6 @@ func GetFavorite(c *gin.Context) {
 	}
 	resp := payloads.GetFavoriteResp{
 		Name: favorite.Name,
-		Docs: make([]payloads.Doc, 0, len(favorite.Docs)),
-	}
-	for _, v := range favorite.Docs {
-		doc := payloads.Doc{
-			DocId: v.ID,
-			Summary: v.Summary,
-		}
-		resp.Docs = append(resp.Docs, doc)
 	}
 	c.JSON(http.StatusOK, resp)
 }
@@ -188,15 +180,18 @@ func GetFavorites(c *gin.Context) {
 		return
 	}
 
-	favorites, err := handler.QueryFavorites(user.ID, uint(limit), uint(offset))
+	favorites, total, err := handler.QueryFavorites(user.ID, uint(limit), uint(offset))
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to query favorites, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-	resps := make([]payloads.GetFavoritesResp, 0, len(favorites))
+	resps := payloads.GetFavoritesResp{
+		Total: total,
+		Favs: make([]payloads.Favorite, 0, len(favorites)),
+	}
 	for _, v := range favorites {
-		resps = append(resps, payloads.GetFavoritesResp{
+		resps.Favs = append(resps.Favs, payloads.Favorite{
 			FavId: v.ID,
 			Name: v.Name,
 		})
@@ -387,15 +382,18 @@ func GetDocs(c *gin.Context) {
 		return
 	}
 
-	docs, err := handler.QueryDocs(uint(favId), uint(limit), uint(offset))
+	docs, total, err := handler.QueryDocs(uint(favId), uint(limit), uint(offset))
 	if err != nil {
 		logger.Logger.Errorf("[GetDocs] failed to query docs, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-	resps := make([]payloads.GetDocsResp, 0, len(docs))
+	resps := payloads.GetDocsResp{
+		Total: total,
+		Docs: make([]payloads.Doc, 0, len(docs)),
+	}
 	for _, v := range docs {
-		resps = append(resps, payloads.GetDocsResp{
+		resps.Docs = append(resps.Docs, payloads.Doc{
 			DocId: v.ID,
 			DocIndex: v.DocIndex,
 			Summary: v.Summary,
