@@ -123,7 +123,7 @@ func TestDeleteFavorite(t *testing.T) {
 	favId := newFavoriteId(userId, "DeleteFavorite")
 	newFavoriteId(userId, "DeleteFavorite")
 	newFavoriteId(userId, "DeleteFavorite")
-	err := handler.DeleteFavorite(favId)
+	err := handler.DeleteFavorite(userId, favId)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -193,7 +193,7 @@ func TestDeleteDoc(t *testing.T) {
 	userId := newUserId("TestDeleteDoc")
 	favId := newFavoriteId(userId, "TestDeleteDoc")
 	docId := newDocID(favId, 3)
-	err := handler.DeleteDoc(docId)
+	err := handler.DeleteDoc(favId, docId)
 	if err != nil {
 		t.Error(err.Error())
 	}

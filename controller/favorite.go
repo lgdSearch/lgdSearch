@@ -88,7 +88,7 @@ func DeleteFavorite(c *gin.Context) {
 		return
 	}
 
-	err = handler.DeleteFavorite(uint(favId))
+	err = handler.DeleteFavorite(uint(user.ID), uint(favId))
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to delete favorite, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
@@ -315,7 +315,7 @@ func DeleteDoc(c *gin.Context) {
 		return
 	}
 
-	err = handler.DeleteDoc(uint(docId))
+	err = handler.DeleteDoc(uint(favId), uint(docId))
 	if err != nil {
 		logger.Logger.Errorf("[DeleteDoc] failed to delete doc, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
