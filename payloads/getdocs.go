@@ -8,6 +8,6 @@ type GetDocsResp struct {
 type Doc struct {
 	DocId    uint   `form:"doc_id" json:"doc_id"`
 	DocIndex uint   `form:"doc_index" json:"doc_index"`
-	Title    string `form:"title" json:"title"`
+	Url      string `form:"url" json:"url"` 
 	Summary  string `form:"summary" json:"summary"`
 }

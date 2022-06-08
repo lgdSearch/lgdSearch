@@ -29,6 +29,7 @@ require (
 	github.com/spf13/viper v1.11.0
 	github.com/swaggo/swag v1.8.2
 	github.com/tebeka/strftime v0.1.5 // indirect
+	github.com/thinkeridea/go-extend v1.3.2
 	github.com/wangbin/jiebago v0.3.2
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e

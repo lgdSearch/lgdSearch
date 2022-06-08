@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"lgdSearch/pkg"
 	"lgdSearch/pkg/db"
 	"lgdSearch/pkg/models"
+	colf "lgdSearch/pkg/utils/colf/doc"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"github.com/thinkeridea/go-extend/exunicode/exutf8"
 )
 
 func AppendFavorite (userId uint, name string) (uint, error) {
@@ -52,9 +55,16 @@ func QueryFavorite (favId uint, name string) (*models.Favorite, error) {
 }
 
 func AppendDoc (favId, docIndex uint) error {
+	buf := pkg.SearchEngine.GetDocById(uint32(docIndex))
+	stDoc := colf.StorageIndexDoc{}
+	err := stDoc.UnmarshalBinary(buf)
+	if err != nil {
+		return err
+	}
 	doc := models.Doc{
 		DocIndex: docIndex,
-		//summary生成 未完成
+		Summary: exutf8.RuneSubString(stDoc.Text, 0, 20),
+		Url: stDoc.Url,
 	}
 	return db.Engine.Model(&models.Favorite{Model: gorm.Model{ID: favId}}).Association("Docs").Append(&doc)
 }

@@ -8,6 +8,7 @@ type Doc struct {
 	gorm.Model
 	FavoriteId   uint
 	DocIndex     uint
+	Url          string
 	Summary 	 string
 }
 

@@ -438,6 +438,7 @@ func GetDocs(c *gin.Context) {
 		resps.Docs = append(resps.Docs, payloads.Doc{
 			DocId: v.ID,
 			DocIndex: v.DocIndex,
+			Url: v.Url,
 			Summary: v.Summary,
 		})
 	}
