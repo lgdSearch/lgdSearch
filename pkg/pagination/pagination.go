@@ -26,7 +26,8 @@ func (p *Pagination) Init(limit int, total int) {
 func (p *Pagination) GetPage(page int) (s int, e int) {
 	//获取指定页数的数据
 	if page > p.PageCount {
-		page = p.PageCount
+		//page = p.PageCount
+		return -1, -1
 	}
 	if page < 0 {
 		page = 1

@@ -41,13 +41,16 @@ func (f *FastSort) Count() int {
 
 // GetAll 获取按 score 排序后的结果集
 func (f *FastSort) GetAll() []models.SliceItem {
-	var result = make([]models.SliceItem, len(f.ScoreMap))
+	var result = make([]models.SliceItem, len(f.ScoreMap)-1)
 
 	_time := time.Now()
 	index := 0
 	for key, value := range f.ScoreMap {
+		if key == 0 {
+			continue
+		}
 		result[index] = models.SliceItem{Id: key, Score: value}
-		index += 1
+		index++
 	}
 	log.Println("fastSort: 取数据耗时", time.Since(_time))
 
