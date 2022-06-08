@@ -7,6 +7,8 @@ import (
 	"sync"
 )
 
+const TrieDataPath = "trieData.txt"
+
 var Tree *Trie
 
 func InitTrie(filepath string) {

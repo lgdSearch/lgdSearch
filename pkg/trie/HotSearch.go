@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const HotSearchFileName = "HotSearch.txt"
+
 // hotSearch use a map and a queue to get top 10 hotSearch message from today's search message
 // 使用定时任务，10分钟更新一次热榜，数据通过map存储和维护，queue中存词条进入的时间和内容，那么过时间了就pop,并维护map
 type queueNode struct {
