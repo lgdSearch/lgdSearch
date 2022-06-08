@@ -38,6 +38,8 @@ const (
 	BadgerShard = 10
 
 	BoltBucketSize = 100
+
+	IndexPath = "./pkg/data"
 )
 
 type Option struct {
@@ -83,6 +85,18 @@ var SearchEngine *Engine
 
 func Set(e *Engine) {
 	SearchEngine = e
+}
+
+func DefaultIndexPath() string {
+	return IndexPath
+}
+
+func DefaultHotSearchPath() string {
+	return DefaultIndexPath() + string(os.PathSeparator) + trie.HotSearchFileName
+}
+
+func DefaultTriePath() string {
+	return DefaultIndexPath() + string(os.PathSeparator) + trie.TrieDataPath
 }
 
 func (e *Engine) Init() {

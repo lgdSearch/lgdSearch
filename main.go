@@ -42,15 +42,15 @@ func main() {
 	engine := router.Init()
 	db.Init()
 
-	PkgEngine := pkg.Engine{IndexPath: "./pkg/data"}
+	PkgEngine := pkg.Engine{IndexPath: pkg.DefaultIndexPath()}
 	PkgEngine.Init()
 	defer PkgEngine.Close()
 
-	trie.InitHotSearch("./pkg/data/HotSearch.txt")
-	defer trie.GetHotSearch().Flush("./pkg/data/HotSearch.txt") // flush
+	trie.InitHotSearch(pkg.DefaultHotSearchPath())
+	defer trie.GetHotSearch().Flush(pkg.DefaultHotSearchPath())
 
-	trie.InitTrie("./pkg/data/trieData.txt") // 载入 trie
-	defer trie.Tree.FlushIndex("./pkg/data/trieData.txt")
+	trie.InitTrie(pkg.DefaultTriePath())
+	defer trie.Tree.FlushIndex(pkg.DefaultTriePath())
 
 	pkg.Set(&PkgEngine)
 
@@ -60,8 +60,8 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 	<-c
 	log.Println("程序即将结束")
-	trie.Tree.FlushIndex("./pkg/data/trieData.txt")
-	trie.GetHotSearch().Flush("./pkg/data/HotSearch.txt") // flush
+	trie.Tree.FlushIndex(pkg.DefaultTriePath())
+	trie.GetHotSearch().Flush(pkg.DefaultHotSearchPath())
 	PkgEngine.Close()
 
 	log.Fatal("program interrupted")
