@@ -1293,7 +1293,7 @@ const docTemplate = `{
                 "summary": {
                     "type": "string"
                 },
-                "title": {
+                "url": {
                     "type": "string"
                 }
             }
