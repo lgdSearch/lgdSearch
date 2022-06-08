@@ -8,7 +8,9 @@ import (
 	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/trie"
 	"lgdSearch/router"
-	"time"
+	"log"
+	"os"
+	"os/signal"
 )
 
 // @title           lgdSearch API
@@ -54,5 +56,13 @@ func main() {
 
 	go engine.Run(":9090")
 
-	time.Sleep(time.Second * 60) // 运行时间
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt)
+	<-c
+	log.Println("程序即将结束")
+	trie.Tree.FlushIndex("./pkg/data/trieData.txt")
+	trie.GetHotSearch().Flush("./pkg/data/HotSearch.txt") // flush
+	PkgEngine.Close()
+
+	log.Fatal("program interrupted")
 }

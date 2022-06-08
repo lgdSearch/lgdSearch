@@ -34,17 +34,25 @@
     |-- payloads               接口req与resp结构体
     |-- pkg
     |   |-- data               存储各类数据
+    |   |   |-- badger_doc_0.db存储文档数据
+    |   |   |-- ....
+    |   |   |-- picture        存储缩略图信息
+    |   |   |-- bolt_keyIds.db 存储倒排索引
+    |   |   |-- dataIndex.txt  持久化数据库中文档数
+    |   |   |-- dictionary.txt jieba分词文档
+    |   |   |-- HotSearch.txt  持久化热搜
+    |   |   |-- trieData.txt   持久化Trie树
     |   |-- db                 数据库操作的封装
-    |   |   |-- badgerStorage
+    |   |   |-- badgerStorage  
     |   |   |-- boltStorage
     |   |-- extractclaims      jwtMapClaims解析
     |   |-- httprequest        http请求构建（测试用）
     |   |-- logger             日志持久化
     |   |-- models             数据库表结构
-    |   |-- pagination
-    |   |-- trie               各类树的实现
-    |   |-- utils
-    |   |   |-- colf           colf序列化工具
+    |   |-- pagination         分页功能
+    |   |-- trie               各类树和数据结构的实现
+    |   |-- utils  
+    |   |   |-- colf           colf序列化工具库
     |   |       |-- doc        doc序列化
     |   |       |-- keyIds     keyIds序列化
     |   |-- vgg                图片特征值提取
