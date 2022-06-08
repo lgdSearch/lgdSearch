@@ -283,6 +283,25 @@ func TestDeleteDoc(t *testing.T) {
 	}
 }
 
+func TestGetAllDocs(t *testing.T) {
+	userId, token := newUserToken("TestGetDocs")
+	favId := newFavoriteId(userId, "TestGetDocs")
+	newDocID(favId, 1)
+	newDocID(favId, 2)
+	newDocID(favId, 3)
+	favId2 := newFavoriteId(userId, "TestGetDocs")
+	newDocID(favId2, 3)
+	newDocID(favId2, 4)
+	uri := "/users/favorites/docs"
+	w := httprequest.Get(token, uri, nil, engine)
+	r := w.Result()
+	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 200 {
+		t.Errorf("code:%d err:%v", w.Code, string(body))
+	}
+} 
+
 func TestGetDocs(t *testing.T) {
 	userId, token := newUserToken("TestGetDocs")
 	favId := newFavoriteId(userId, "TestGetDocs")

@@ -162,6 +162,24 @@ definitions:
       name:
         type: string
     type: object
+  payloads.FavoriteWithDocs:
+    properties:
+      docs:
+        items:
+          $ref: '#/definitions/payloads.Doc'
+        type: array
+      fav_id:
+        type: integer
+      name:
+        type: string
+    type: object
+  payloads.GetAllDocsResp:
+    properties:
+      favs:
+        items:
+          $ref: '#/definitions/payloads.FavoriteWithDocs'
+        type: array
+    type: object
   payloads.GetDocsResp:
     properties:
       docs:
@@ -801,6 +819,40 @@ paths:
       responses:
         "204":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
+      tags:
+      - favorite
+  /users/favorites/Docs:
+    get:
+      consumes:
+      - application/json
+      description: 无分页 数据量大
+      parameters:
+      - description: userToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payloads.GetAllDocsResp'
         "400":
           description: Bad Request
           schema:

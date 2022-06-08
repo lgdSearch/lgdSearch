@@ -241,6 +241,56 @@ func GetFavorites(c *gin.Context) {
 	c.JSON(http.StatusOK, resps)
 }
 
+// 获取全部收藏夹和全部收藏结果
+// @Tags favorite
+// @Description 无分页 数据量大
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string          true       "userToken"
+// @Success      200            {object}  payloads.GetAllDocsResp
+// @Failure      400            {object}  weberror.Info              "Bad Request"
+// @Failure      404            {object}  weberror.Info              "Not Found"
+// @Failure      500            {object}  weberror.Info              "InternalServerError"
+// @Router       /users/favorites/Docs [get]
+// @Security     Token
+func GetAllDocs(c *gin.Context) {
+	user := extractclaims.ToUser(jwt.ExtractClaims(c))
+	if user == nil {
+		logger.Logger.Errorf("[DeleteFavorite] failed to parse request, err: %s", "failed to extract user info")
+		c.JSON(http.StatusBadRequest, weberror.Info{Error: http.StatusText(http.StatusBadRequest)})
+		return
+	}
+
+	favorites, err := handler.QueryFavoritesAndDocs(user.ID)
+	if err != nil {
+		logger.Logger.Errorf("[DeleteFavorite] failed to query favorites, err: %s", err.Error())
+		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+	resp := payloads.GetAllDocsResp{
+		Favs: make([]payloads.FavoriteWithDocs, 0, len(favorites)),
+	}
+	for _, fav := range favorites {
+		elem := payloads.FavoriteWithDocs{
+			Favorite: payloads.Favorite{
+				FavId: fav.ID,
+				Name: fav.Name,
+			},
+			Docs: make([]payloads.Doc, 0, len(fav.Docs)),
+		}
+		for _, doc := range fav.Docs {
+			elem.Docs = append(elem.Docs, payloads.Doc{
+				DocId: doc.ID,
+				DocIndex: doc.DocIndex,
+				Url: doc.Url,
+				Summary: doc.Summary,
+			})
+		}
+		resp.Favs = append(resp.Favs, elem)
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
 // 添加收藏
 // @Tags favorite
 // @Description

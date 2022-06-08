@@ -7,7 +7,6 @@ import (
 	colf "lgdSearch/pkg/utils/colf/doc"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"github.com/thinkeridea/go-extend/exunicode/exutf8"
 )
 
 func AppendFavorite (userId uint, name string) (uint, error) {
@@ -63,7 +62,7 @@ func AppendDoc (favId, docIndex uint) error {
 	}
 	doc := models.Doc{
 		DocIndex: docIndex,
-		Summary: exutf8.RuneSubString(stDoc.Text, 0, 20),
+		Summary: stDoc.Text,
 		Url: stDoc.Url,
 	}
 	return db.Engine.Model(&models.Favorite{Model: gorm.Model{ID: favId}}).Association("Docs").Append(&doc)
@@ -93,4 +92,10 @@ func QueryDocs (favId, limit, offset uint) ([]models.Doc, int64, error) {
 	}
 	total := db.Engine.Model(&models.Favorite{Model: gorm.Model{ID: favId}}).Association("Docs").Count()
 	return docs, total, err
+}
+
+func QueryFavoritesAndDocs(userId uint) ([]models.Favorite, error) {
+	favorites := make([]models.Favorite, 0, 10)
+	result := db.Engine.Preload("Docs").Find(&favorites, "user_id = ?", userId)
+	return favorites, result.Error
 }

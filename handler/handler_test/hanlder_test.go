@@ -162,6 +162,25 @@ func TestQueryFavorites(t *testing.T) {
 	}
 }
 
+func TestQueryFavoritesAndDocs(t *testing.T) {
+	userId := newUserId("QueryFavorites")
+	wrongId := newUserId("wrong")
+	newFavoriteId(wrongId, "wrong")
+	favId1 := newFavoriteId(userId, "QueryFavorites")
+	favId2 := newFavoriteId(userId, "QueryFavorites")
+	favId3 := newFavoriteId(userId, "QueryFavorites")
+	newDocID(favId1, 1)
+	newDocID(favId2, 2)
+	newDocID(favId3, 3)
+	result, err := handler.QueryFavoritesAndDocs(userId)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if len(result) != 3 {
+		t.Error("number of favs error")
+	}
+}
+
 func TestQueryFavorite(t *testing.T) {
 	userId := newUserId("QueryFavorite")
 	favId := newFavoriteId(userId, "TestQueryFavorite")

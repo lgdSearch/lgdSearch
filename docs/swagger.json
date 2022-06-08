@@ -519,6 +519,60 @@
                 }
             }
         },
+        "/users/favorites/Docs": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "无分页 数据量大",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorite"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payloads.GetAllDocsResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
         "/users/favorites/{fav_id}": {
             "get": {
                 "security": [
@@ -1298,6 +1352,34 @@
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "payloads.FavoriteWithDocs": {
+            "type": "object",
+            "properties": {
+                "docs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/payloads.Doc"
+                    }
+                },
+                "fav_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "payloads.GetAllDocsResp": {
+            "type": "object",
+            "properties": {
+                "favs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/payloads.FavoriteWithDocs"
+                    }
                 }
             }
         },

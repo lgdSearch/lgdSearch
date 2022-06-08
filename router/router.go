@@ -29,6 +29,7 @@ func Init() *gin.Engine {
 			favorites.DELETE("/:fav_id", controller.DeleteFavorite)
 			favorites.GET("/:fav_id", controller.GetFavorite)
 			favorites.GET("", controller.GetFavorites)
+			favorites.GET("/docs", controller.GetAllDocs)
 			favorites.PUT("/:fav_id/docs", controller.AddDoc)
 			favorites.DELETE("/:fav_id/docs/:doc_id", controller.DeleteDoc)
 			favorites.GET("/:fav_id/docs", controller.GetDocs)
