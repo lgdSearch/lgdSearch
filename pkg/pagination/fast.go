@@ -41,7 +41,9 @@ func (f *FastSort) Count() int {
 
 // GetAll 获取按 score 排序后的结果集
 func (f *FastSort) GetAll() []models.SliceItem {
-	var result = make([]models.SliceItem, len(f.ScoreMap)-1)
+	delete(f.ScoreMap, 0) // 如果有 0 去掉
+
+	var result = make([]models.SliceItem, len(f.ScoreMap))
 
 	_time := time.Now()
 	index := 0

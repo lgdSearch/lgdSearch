@@ -109,7 +109,8 @@ func Read(data interface{}, filename string) {
 	dec := gob.NewDecoder(buffer)
 	err = dec.Decode(data)
 	if err != nil {
-		panic(err)
+		//panic(err)
+		log.Println("Decode Error: ", err, "buffer.Bytes() is :", buffer.Bytes())
 	}
 }
 
