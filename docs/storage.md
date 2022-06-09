@@ -5,7 +5,7 @@
 倒排索引通过 boltdb 存储, 主要是看重了 boltdb 随机读的高效率。
 boltdb 是基于 B+ 树结构实现的存储结构，所以查找的效率很高，但是修改的效率非常低下。
 
-以下为倒排索引数组中存储的对象结构，使用 colf 序列化
+以下为倒排索引数组中存储的对象结构，使用 colfer 序列化
 
 [点击查看源码](../pkg/utils/colf/keyIds/keyIds.go)
 ```go
@@ -39,7 +39,7 @@ badgerdb 是leveldb的改良版本，
 因为可以通过 k-v 键值对的 key 记录，
 所以在 value 中不记录
 
-使用 colf 序列化
+使用 colfer 序列化
 
 [点击查看源码](../pkg/utils/colf/doc/docStorage.go)
 ```go
