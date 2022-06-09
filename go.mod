@@ -29,11 +29,12 @@ require (
 	github.com/spf13/viper v1.11.0
 	github.com/swaggo/swag v1.8.2
 	github.com/tebeka/strftime v0.1.5 // indirect
-	github.com/thinkeridea/go-extend v1.3.2
 	github.com/wangbin/jiebago v0.3.2
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 	golang.org/x/net v0.0.0-20220531201128-c960675eff93 // indirect
+	google.golang.org/grpc v1.45.0
+	google.golang.org/protobuf v1.28.0
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.5
 )

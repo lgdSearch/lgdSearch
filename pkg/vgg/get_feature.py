@@ -13,7 +13,9 @@ class GetFeatureService(get_feature_pb2_grpc.GrpcServiceServicer):
         self.model = VGG16(weights='imagenet', include_top=False)
 
     def getFeature(self, request, context):
-        img_array = tf.keras.utils.img_to_array(request.image)
+        img_path = request.image
+        img = tf.keras.utils.load_img(img_path, target_size=(224, 224))
+        img_array = tf.keras.utils.img_to_array(img)
         img_array = tf.expand_dims(img_array, 0)  # Create a batch
         feat = self.model.predict(img_array)
         norm_feat = feat[0] / LA.norm(feat[0])

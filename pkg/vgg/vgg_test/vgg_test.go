@@ -2,13 +2,13 @@ package vgg_test
 
 import (
 	"testing"
+	"lgdSearch/pkg/vgg"
 )
 
-func TestMain(m *testing.M) {
-	vgg.LoadModel()
-	m.Run()
-}
-
 func TestGetFeature(t *testing.T) {
-	vgg.GetFeature()
+	result, err := vgg.GetFeature("./vgg_test/char.jpg")
+	if err != nil {
+		t.Error(err.Error())
+	}
+	println(result)
 }
