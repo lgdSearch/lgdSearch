@@ -184,14 +184,14 @@ func TestQueryFavoritesAndDocs(t *testing.T) {
 func TestQueryFavorite(t *testing.T) {
 	userId := newUserId("QueryFavorite")
 	favId := newFavoriteId(userId, "TestQueryFavorite")
-	fav, err := handler.QueryFavorite(favId, "")
+	fav, err := handler.QueryFavorite(userId, favId, "")
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if strings.Compare(fav.Name, "TestQueryFavorite") != 0 {
 		t.Error("name incorrect")
 	}
-	fav, err = handler.QueryFavorite(0, "TestQueryFavorite")
+	fav, err = handler.QueryFavorite(userId, 0, "TestQueryFavorite")
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -223,14 +223,14 @@ func TestQueryDoc(t *testing.T) {
 	userId := newUserId("TestQueryDoc")
 	favId := newFavoriteId(userId, "TestQueryDoc")
 	docId := newDocID(favId, 3)
-	doc, err := handler.QueryDoc(docId, 0)
+	doc, err := handler.QueryDoc(favId, docId, 0)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if doc.DocIndex != 3 {
 		t.Error("doc_index incorrect")
 	}
-	doc, err = handler.QueryDoc(0, 3)
+	doc, err = handler.QueryDoc(favId, 0, 3)
 	if err != nil {
 		t.Error(err.Error())
 	}

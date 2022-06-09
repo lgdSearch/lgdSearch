@@ -6,6 +6,9 @@ from numpy import linalg as LA
 import grpc
 from concurrent import futures
 import time
+import io
+from PIL import Image
+from pymilvus import connections
 
 
 class GetFeatureService(get_feature_pb2_grpc.GrpcServiceServicer):
@@ -13,8 +16,13 @@ class GetFeatureService(get_feature_pb2_grpc.GrpcServiceServicer):
         self.model = VGG16(weights='imagenet', include_top=False)
 
     def getFeature(self, request, context):
-        img_path = request.image
-        img = tf.keras.utils.load_img(img_path, target_size=(224, 224))
+        # img_bytes: 图片内容 bytes
+        img = Image.open(io.BytesIO(request.image))
+        print(img)
+        img = img.convert('RGB')
+        img = img.resize((224, 224), Image.NEAREST)
+        # img_path = request.image
+        # img = tf.keras.utils.load_img(img_path, target_size=(224, 224))
         img_array = tf.keras.utils.img_to_array(img)
         img_array = tf.expand_dims(img_array, 0)  # Create a batch
         feat = self.model.predict(img_array)
@@ -41,5 +49,18 @@ def run():
         server.stop(0)
 
 
+def connect2Milvus():
+    connections.connect(
+        alias="default",
+        host='192.168.242.5',
+        port='19530'
+    )
+
+
+def create_collection():
+    
+
+
 if __name__ == '__main__':
-    run()
+    # run()
+    connect2Milvus()

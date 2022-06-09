@@ -41,7 +41,7 @@ func AddFavorite(c *gin.Context) {
 		return
 	}
 
-	_, err := handler.QueryFavorite(0, req.Name)
+	_, err := handler.QueryFavorite(user.ID, 0, req.Name)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		if err != nil {
 			logger.Logger.Errorf("[AddFavorite] failed to query favorite, err: %s", err.Error())
@@ -166,7 +166,7 @@ func GetFavorite(c *gin.Context) {
 		return
 	}
 
-	favorite, err := handler.QueryFavorite(uint(favId), "")
+	favorite, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[GetFavorite] failed to query favorite, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
@@ -326,7 +326,7 @@ func AddDoc(c *gin.Context) {
 	}
 
 	//是否有对此收藏夹的访问权限
-	fav, err := handler.QueryFavorite(uint(favId), "")
+	fav, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[AddDoc] failed to query favorite, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
@@ -339,7 +339,7 @@ func AddDoc(c *gin.Context) {
 	}
 
 	//此文档是否已收藏
-	_, err = handler.QueryDoc(0, req.DocIndex)
+	_, err = handler.QueryDoc(uint(favId), 0, req.DocIndex)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		if err != nil {
 			logger.Logger.Errorf("[AddDoc] failed to query doc, err: %s", err.Error())
@@ -395,7 +395,7 @@ func DeleteDoc(c *gin.Context) {
 	}
 
 	//是否有对此收藏夹的访问权限
-	fav, err := handler.QueryFavorite(uint(favId), "")
+	fav, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[DeleteDoc] failed to query favorite, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
@@ -462,7 +462,7 @@ func GetDocs(c *gin.Context) {
 	}
 
 	//是否有对此收藏夹的访问权限
-	fav, err := handler.QueryFavorite(uint(favId), "")
+	fav, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[GetDocs] failed to query favorite, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})

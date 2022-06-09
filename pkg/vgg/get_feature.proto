@@ -9,13 +9,13 @@ service GrpcService {
 }
 
 message Request {
-    string image = 1;
+    bytes image = 1;
 }
 
 message Response {
     message R1 {
         message R0 {
-            repeated double a = 1;
+            repeated float a = 1;
         }
         repeated R0 b = 1;
     }

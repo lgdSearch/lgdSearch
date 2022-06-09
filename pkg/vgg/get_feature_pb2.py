@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11get_feature.proto\"\x18\n\x07Request\x12\r\n\x05image\x18\x01 \x01(\t\"V\n\x08Response\x12\x17\n\x01\x63\x18\x01 \x03(\x0b\x32\x0c.Response.R1\x1a\x31\n\x02R1\x12\x1a\n\x01\x62\x18\x01 \x03(\x0b\x32\x0f.Response.R1.R0\x1a\x0f\n\x02R0\x12\t\n\x01\x61\x18\x01 \x03(\x01\x32\x32\n\x0bGrpcService\x12#\n\ngetFeature\x12\x08.Request\x1a\t.Response\"\x00\x42\x03\x80\x01\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11get_feature.proto\"\x18\n\x07Request\x12\r\n\x05image\x18\x01 \x01(\x0c\"V\n\x08Response\x12\x17\n\x01\x63\x18\x01 \x03(\x0b\x32\x0c.Response.R1\x1a\x31\n\x02R1\x12\x1a\n\x01\x62\x18\x01 \x03(\x0b\x32\x0f.Response.R1.R0\x1a\x0f\n\x02R0\x12\t\n\x01\x61\x18\x01 \x03(\x02\x32\x32\n\x0bGrpcService\x12#\n\ngetFeature\x12\x08.Request\x1a\t.Response\"\x00\x42\x11Z\x0c./getfeature\x80\x01\x01\x62\x06proto3')
 
 
 
@@ -56,7 +56,7 @@ _GRPCSERVICE = DESCRIPTOR.services_by_name['GrpcService']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  DESCRIPTOR._serialized_options = b'\200\001\001'
+  DESCRIPTOR._serialized_options = b'Z\014./getfeature\200\001\001'
   _REQUEST._serialized_start=21
   _REQUEST._serialized_end=45
   _RESPONSE._serialized_start=47
