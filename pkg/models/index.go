@@ -30,7 +30,10 @@ type WordMap struct {
 
 type ResponseDoc struct {
 	IndexDoc
-	Score float32 `json:"score,omitempty"` //得分
+	Score  float32 `json:"score,omitempty"`  //得分
+	Islike bool    `json:"islike"`           //是否被收藏
+	Docsid uint    `json:"docsid,omitempty"` //收藏id
+	Favid  uint    `json:"favid,omitempty"`  //收藏夹id
 }
 
 type ResponseUrl struct {
@@ -39,6 +42,9 @@ type ResponseUrl struct {
 	Id           uint32  `json:"id,omitempty"`
 	Text         string  `json:"text,omitempty"`
 	Score        float32 `json:"score,omitempty"`
+	Islike       bool    `json:"islike"`           //是否被收藏
+	Docsid       uint    `json:"docsid,omitempty"` //收藏id
+	Favid        uint    `json:"favid,omitempty"`  //收藏夹id
 }
 
 type RemoveIndexModel struct {

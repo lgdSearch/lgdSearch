@@ -412,6 +412,7 @@ func (e *Engine) WordCut(text string, filter []string) []string {
 
 //MultiSearch 多线程搜索
 func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult {
+
 	//等待搜索初始化完成
 	if e.IsDebug {
 		log.Println("Search start")
@@ -549,6 +550,13 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 							}
 						}
 						result.Documents[index].Text = text
+						//判断是否收藏
+						result.Documents[index].Islike = false
+						if val, ok := request.Likes[uint(item.Id)]; ok {
+							result.Documents[index].Islike = true
+							result.Documents[index].Docsid = val.Docid
+							result.Documents[index].Favid = val.Favid
+						}
 					}
 				}(index, item)
 			}
@@ -719,6 +727,13 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 							}
 						}
 						result.Documents[index].Text = text
+						//判断是否收藏
+						result.Documents[index].Islike = false
+						if val, ok := request.Likes[uint(item.Id)]; ok {
+							result.Documents[index].Islike = true
+							result.Documents[index].Docsid = val.Docid
+							result.Documents[index].Favid = val.Favid
+						}
 					}
 				}(index, item)
 			}
