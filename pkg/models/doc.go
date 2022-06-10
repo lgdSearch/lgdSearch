@@ -6,12 +6,16 @@ import (
 
 type Doc struct {
 	gorm.Model
-	FavoriteId   uint
-	DocIndex     uint
-	Url          string
-	Summary 	 string
+	FavoriteId uint
+	DocIndex   uint
+	Url        string
+	Summary    string
 }
 
-func (*Doc) TableName() string{
+type DocId struct {
+	DocId uint `json:"docId"`
+}
+
+func (*Doc) TableName() string {
 	return "docs"
 }

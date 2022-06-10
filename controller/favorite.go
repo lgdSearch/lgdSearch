@@ -2,16 +2,17 @@ package controller
 
 import (
 	"errors"
-	"lgdSearch/handler"
-	"lgdSearch/payloads"
-	"lgdSearch/pkg/logger"
-	"lgdSearch/pkg/weberror"
-	"lgdSearch/pkg/extractclaims"
-	"net/http"
-	"strconv"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"lgdSearch/handler"
+	"lgdSearch/payloads"
+	"lgdSearch/pkg/extractclaims"
+	"lgdSearch/pkg/logger"
+	"lgdSearch/pkg/models"
+	"lgdSearch/pkg/weberror"
+	"net/http"
+	"strconv"
 )
 
 // 添加收藏夹
@@ -45,7 +46,7 @@ func AddFavorite(c *gin.Context) {
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		if err != nil {
 			logger.Logger.Errorf("[AddFavorite] failed to query favorite, err: %s", err.Error())
-			c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+			c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 			return
 		}
 		logger.Logger.Errorf("[AddFavorite] err: %s", "duplicate name")
@@ -55,7 +56,7 @@ func AddFavorite(c *gin.Context) {
 	_, err = handler.AppendFavorite(user.ID, req.Name)
 	if err != nil {
 		logger.Logger.Errorf("[AddFavorite] failed to add favorite, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusCreated, nil)
@@ -97,7 +98,7 @@ func UpdateFavoriteName(c *gin.Context) {
 	err = handler.UpdateFavoriteName(user.ID, uint(favId), req.Name)
 	if err != nil {
 		logger.Logger.Errorf("[UpdateFavoriteName] failed to add favorite, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
@@ -133,7 +134,7 @@ func DeleteFavorite(c *gin.Context) {
 	err = handler.DeleteFavorite(uint(user.ID), uint(favId))
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to delete favorite, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
@@ -169,12 +170,12 @@ func GetFavorite(c *gin.Context) {
 	favorite, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[GetFavorite] failed to query favorite, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	if favorite.UserId != user.ID {
 		logger.Logger.Errorf("[GetFavorite] err: %s", "permission denied")
-		c.JSON(http.StatusForbidden,  weberror.Info{Error: http.StatusText(http.StatusForbidden)})
+		c.JSON(http.StatusForbidden, weberror.Info{Error: http.StatusText(http.StatusForbidden)})
 		return
 	}
 	resp := payloads.GetFavoriteResp{
@@ -225,17 +226,17 @@ func GetFavorites(c *gin.Context) {
 	favorites, total, err := handler.QueryFavorites(user.ID, uint(limit), uint(offset))
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to query favorites, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	resps := payloads.GetFavoritesResp{
 		Total: total,
-		Favs: make([]payloads.Favorite, 0, len(favorites)),
+		Favs:  make([]payloads.Favorite, 0, len(favorites)),
 	}
 	for _, v := range favorites {
 		resps.Favs = append(resps.Favs, payloads.Favorite{
 			FavId: v.ID,
-			Name: v.Name,
+			Name:  v.Name,
 		})
 	}
 	c.JSON(http.StatusOK, resps)
@@ -264,7 +265,7 @@ func GetAllDocs(c *gin.Context) {
 	favorites, err := handler.QueryFavoritesAndDocs(user.ID)
 	if err != nil {
 		logger.Logger.Errorf("[DeleteFavorite] failed to query favorites, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	resp := payloads.GetAllDocsResp{
@@ -274,16 +275,16 @@ func GetAllDocs(c *gin.Context) {
 		elem := payloads.FavoriteWithDocs{
 			Favorite: payloads.Favorite{
 				FavId: fav.ID,
-				Name: fav.Name,
+				Name:  fav.Name,
 			},
 			Docs: make([]payloads.Doc, 0, len(fav.Docs)),
 		}
 		for _, doc := range fav.Docs {
 			elem.Docs = append(elem.Docs, payloads.Doc{
-				DocId: doc.ID,
+				DocId:    doc.ID,
 				DocIndex: doc.DocIndex,
-				Url: doc.Url,
-				Summary: doc.Summary,
+				Url:      doc.Url,
+				Summary:  doc.Summary,
 			})
 		}
 		resp.Favs = append(resp.Favs, elem)
@@ -299,7 +300,7 @@ func GetAllDocs(c *gin.Context) {
 // @Param        Authorization  header    string              true  "userToken"
 // @Param        fav_id         path      uint                true  "fav_id"
 // @Param        AddDocReq      body      payloads.AddDocReq  true  "include doc_index"
-// @Success      201
+// @Success      201			{object}  payloads.Result{data=models.DocId}
 // @Failure      400            {object}  weberror.Info             "Bad Request"
 // @Failure      404            {object}  weberror.Info             "Not Found"
 // @Failure      500            {object}  weberror.Info             "InternalServerError"
@@ -329,12 +330,12 @@ func AddDoc(c *gin.Context) {
 	fav, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[AddDoc] failed to query favorite, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	if fav.UserId != user.ID {
 		logger.Logger.Errorf("[AddDoc] err: %s", "permission denied")
-		c.JSON(http.StatusForbidden,  weberror.Info{Error: http.StatusText(http.StatusForbidden)})
+		c.JSON(http.StatusForbidden, weberror.Info{Error: http.StatusText(http.StatusForbidden)})
 		return
 	}
 
@@ -343,7 +344,7 @@ func AddDoc(c *gin.Context) {
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		if err != nil {
 			logger.Logger.Errorf("[AddDoc] failed to query doc, err: %s", err.Error())
-			c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+			c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 			return
 		}
 		logger.Logger.Errorf("[AddDoc] failed to append doc, err: %s", "duplicate document")
@@ -351,13 +352,13 @@ func AddDoc(c *gin.Context) {
 		return
 	}
 
-	err = handler.AppendDoc(uint(favId), req.DocIndex)
+	result, err := handler.AppendDoc(uint(favId), req.DocIndex)
 	if err != nil {
 		logger.Logger.Errorf("[AddDoc] failed to append doc, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-	c.JSON(http.StatusCreated, nil)
+	c.JSON(http.StatusCreated, payloads.Success(models.DocId{DocId: result.ID}))
 }
 
 // 取消收藏
@@ -398,19 +399,19 @@ func DeleteDoc(c *gin.Context) {
 	fav, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[DeleteDoc] failed to query favorite, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	if fav.UserId != user.ID {
 		logger.Logger.Errorf("[DeleteDoc] err: %s", "permission denied")
-		c.JSON(http.StatusForbidden,  weberror.Info{Error: http.StatusText(http.StatusForbidden)})
+		c.JSON(http.StatusForbidden, weberror.Info{Error: http.StatusText(http.StatusForbidden)})
 		return
 	}
 
 	err = handler.DeleteDoc(uint(favId), uint(docId))
 	if err != nil {
 		logger.Logger.Errorf("[DeleteDoc] failed to delete doc, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
@@ -465,31 +466,31 @@ func GetDocs(c *gin.Context) {
 	fav, err := handler.QueryFavorite(user.ID, uint(favId), "")
 	if err != nil {
 		logger.Logger.Errorf("[GetDocs] failed to query favorite, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	if fav.UserId != user.ID {
 		logger.Logger.Errorf("[GetDocs] err: %s", "permission denied")
-		c.JSON(http.StatusForbidden,  weberror.Info{Error: http.StatusText(http.StatusForbidden)})
+		c.JSON(http.StatusForbidden, weberror.Info{Error: http.StatusText(http.StatusForbidden)})
 		return
 	}
 
 	docs, total, err := handler.QueryDocs(uint(favId), uint(limit), uint(offset))
 	if err != nil {
 		logger.Logger.Errorf("[GetDocs] failed to query docs, err: %s", err.Error())
-		c.JSON(http.StatusInternalServerError,  weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 	resps := payloads.GetDocsResp{
 		Total: total,
-		Docs: make([]payloads.Doc, 0, len(docs)),
+		Docs:  make([]payloads.Doc, 0, len(docs)),
 	}
 	for _, v := range docs {
 		resps.Docs = append(resps.Docs, payloads.Doc{
-			DocId: v.ID,
+			DocId:    v.ID,
 			DocIndex: v.DocIndex,
-			Url: v.Url,
-			Summary: v.Summary,
+			Url:      v.Url,
+			Summary:  v.Summary,
 		})
 	}
 	c.JSON(http.StatusOK, resps)
