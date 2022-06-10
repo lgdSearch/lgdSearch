@@ -2,14 +2,19 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"io"
 	"lgdSearch/controller"
 	"lgdSearch/middleware"
+	"lgdSearch/pkg/logger"
 	"net/http"
+	"os"
 )
 
 func Init() *gin.Engine {
 	//设置默认引擎
+	gin.DefaultWriter = io.MultiWriter(logger.Writer, os.Stdout) // 输出到日志中
 	engine := gin.Default()
+
 	engine.Use(cors())
 	auth := middleware.GetJWTMiddle()
 	engine.POST("/login", auth.LoginHandler)

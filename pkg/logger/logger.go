@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
+	"io"
 	"os"
 	"path"
 	"time"
@@ -15,6 +16,7 @@ import (
 var (
 	Level  = logrus.DebugLevel
 	Logger *logrus.Logger
+	Writer io.Writer
 )
 
 func InitLog(level logrus.Level) error {
@@ -46,7 +48,7 @@ func InitLog(level logrus.Level) error {
 		}
 	}
 	baseLogPath := path.Join(logPath, logName)
-	writer, err := rotatelogs.New(
+	Writer, err = rotatelogs.New(
 		baseLogPath+".%Y%m%d%H%M",
 		rotatelogs.WithLinkName(baseLogPath),      // 生成软链，指向最新日志文件
 		rotatelogs.WithMaxAge(7*24*time.Hour),     // 文件最大保存时间
@@ -63,12 +65,12 @@ func InitLog(level logrus.Level) error {
 	fileformatter.DisableColors = true
 
 	lfHook := lfshook.NewHook(lfshook.WriterMap{
-		logrus.DebugLevel: writer, // 为不同级别设置不同的输出目的
-		logrus.InfoLevel:  writer,
-		logrus.WarnLevel:  writer,
-		logrus.ErrorLevel: writer,
-		logrus.FatalLevel: writer,
-		logrus.PanicLevel: writer,
+		logrus.DebugLevel: Writer, // 为不同级别设置不同的输出目的
+		logrus.InfoLevel:  Writer,
+		logrus.WarnLevel:  Writer,
+		logrus.ErrorLevel: Writer,
+		logrus.FatalLevel: Writer,
+		logrus.PanicLevel: Writer,
 	}, fileformatter)
 	Logger.AddHook(lfHook)
 	return nil

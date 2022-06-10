@@ -22,10 +22,6 @@ func (n *Node) foreach(runes []rune, deep int) {
 			if len(runes) <= deep {
 				runes = append(runes, '我')
 			}
-			//if v == nil { // map 里面怎么有 nil ？ 估计是操作系统的锅，也不清楚，重启电脑就没了。。
-			//	log.Println(n.count, n.data, n.sons, n.father, n.size, n.max, n.child, key)
-			//	return
-			//}
 			runes[deep] = v.data
 			v.foreach(runes, deep+1)
 		}
@@ -34,9 +30,6 @@ func (n *Node) foreach(runes []rune, deep int) {
 			if len(runes) <= deep {
 				runes = append(runes, '我')
 			}
-			//if pair.value == nil {
-			//	return
-			//}
 			runes[deep] = pair.value.data
 			pair.value.foreach(runes, deep+1)
 		}
@@ -124,7 +117,7 @@ func (t *Trie) automaticFlush(filepath string) {
 
 	for {
 		<-ticker.C
-		//检查数据是否有变动
+
 		if size != t.size {
 			size = t.size
 			t.FlushIndex(filepath)

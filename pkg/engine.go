@@ -14,13 +14,13 @@ import (
 	"io/ioutil"
 	"lgdSearch/pkg/db/badgerStorage"
 	"lgdSearch/pkg/db/boltStorage"
+	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/models"
 	"lgdSearch/pkg/pagination"
 	"lgdSearch/pkg/trie"
 	"lgdSearch/pkg/utils"
 	"lgdSearch/pkg/utils/colf/doc"
 	"lgdSearch/pkg/utils/colf/keyIds"
-	"log"
 	"math"
 	"net/http"
 	"os"
@@ -32,14 +32,22 @@ import (
 
 const (
 	//Shard is the default engine shard
-	//This means that the engine will have shard AVL tree and leveldb
 	Shard = 100
 
+	// BadgerShard badgerDB的分库数
 	BadgerShard = 10
 
+	// BoltBucketSize boltDB中桶的数量
 	BoltBucketSize = 100
 
+	// IndexPath 数据文件地址
 	IndexPath = "./pkg/data"
+
+	// GitHubVersion github版本为 50000 条数据
+	GitHubVersion = 50000
+
+	// CloudVersion 完整版本为 1亿条数据
+	CloudVersion = 100000000
 )
 
 type Option struct {
@@ -78,6 +86,9 @@ type Engine struct {
 
 	//是否调试模式
 	IsDebug bool
+
+	// 版本
+	Version int
 }
 
 var seg jiebago.Segmenter
@@ -109,7 +120,7 @@ func (e *Engine) Init() {
 	if e.Option == nil {
 		e.Option = e.GetOptions()
 	}
-	log.Println("数据存储目录：", e.IndexPath)
+	logger.Logger.Infoln("数据存储目录：", e.IndexPath)
 
 	err := seg.LoadDictionary(e.getFilePath(e.Option.DictionaryName))
 	if err != nil {
@@ -122,7 +133,11 @@ func (e *Engine) Init() {
 
 	utils.Read(&e.index, e.getFilePath(e.Option.DocIndexName))
 	if e.index == 0 {
-		e.index = 50000
+		if e.Version == 0 {
+			e.index = GitHubVersion
+		} else {
+			e.index = CloudVersion
+		}
 	}
 
 	//初始化chan
@@ -155,7 +170,7 @@ func (e *Engine) Init() {
 		utils.Read(&picture, e.getFilePath(fmt.Sprintf("%s_%d.txt", e.Option.PictureName, shard)))
 		pictureUrlMap = append(pictureUrlMap, picture)
 	}
-	log.Println("初始化完成")
+	logger.Logger.Infoln("初始化完成 ------------------------------------")
 
 	//初始化完成，自动检测索引并持久化到磁盘
 	go e.automaticFlush()
@@ -203,7 +218,7 @@ func (e *Engine) getFilePath(fileName string) string {
 	return e.IndexPath + string(os.PathSeparator) + fileName
 }
 
-// AddDocument
+// AddDocument 添加文档
 func (e *Engine) AddDocument(index *models.IndexDoc) {
 	//等待初始化完成
 	e.Wait()
@@ -243,11 +258,11 @@ func (e *Engine) addDoc(index *models.IndexDoc) {
 	value := doc.StorageIndexDoc{Text: index.Text, Url: index.Url}
 	buf, err := value.MarshalBinary()
 	if err != nil {
-		log.Println("addDoc", index.Id, err)
+		logger.Logger.Errorf("addDoc id = %d, err = %s", index.Id, err)
 	}
 	err = e.DocStorages[index.Id%BadgerShard].Set(k, buf)
 	if err != nil {
-		log.Println("doc set", index.Id, err)
+		logger.Logger.Errorf("setDoc id = %d, err = %s", index.Id, err)
 	}
 }
 
@@ -341,10 +356,10 @@ func (e *Engine) WordCutFilter(text string) ([]uint32, map[uint32]float32) {
 		keyMap[val] += float32(2*len(words)-index+1) / (float32(math.Log10(float64(10+index))) * lenWords)
 	}
 
-	var keysSlice []uint32 = make([]uint32, len(keyMap))
+	var keysSlice = make([]uint32, len(keyMap))
 
 	index := 0
-	for word, _ := range wordMap {
+	for word := range wordMap {
 		keysSlice[index] = word
 		index += 1
 	}
@@ -383,7 +398,7 @@ func (e *Engine) WordCut(text string, filter []string) []string {
 				if (w[0] > 47 && w[0] < 58) || (w[0] > 64 && w[0] < 91) || (w[0] > 96 && w[0] < 123) {
 					// 保留数字和字母
 				} else if w[0] <= 32 || w[0] == 127 || !pre { // 不要空格和分隔符, 不常用字符和符号只保留首位
-					pre = true // 对于这些分隔符我认为是一句新的话的开头
+					pre = true // 对于这些分隔符可以认为是一句新的话的开头
 					continue
 				}
 			}
@@ -402,7 +417,7 @@ func (e *Engine) WordCut(text string, filter []string) []string {
 	var wordsSlice = make([]string, len(wordMap))
 
 	index := 0
-	for word, _ := range wordMap {
+	for word := range wordMap {
 		wordsSlice[index] = word
 		index += 1
 	}
@@ -415,14 +430,14 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 
 	//等待搜索初始化完成
 	if e.IsDebug {
-		log.Println("Search start")
+		logger.Logger.Infoln("Search start ------------------------")
 	}
 
 	e.Wait()
 	//分词搜索
 	words := e.WordCut(request.Query, request.FilterWord)
 	if e.IsDebug {
-		log.Println("分词数: ", len(words))
+		logger.Logger.Infoln("分词数: ", len(words))
 	}
 
 	var lock sync.Mutex
@@ -443,11 +458,11 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 		}
 
 		wg.Wait()
-		fastSort = pagination.FastSort{ScoreMap: make(map[uint32]float32, int(float32(len(allValues))*1.5))} // 预分配空间，优化效率
+		fastSort = pagination.FastSort{ScoreMap: make(map[uint32]*pagination.DocScore, int(float32(len(allValues))*1.5))} // 预分配空间，优化效率
 		fastSort.Add(allValues)
 	})
 	if e.IsDebug {
-		log.Println("搜索时间:", _time, "ms")
+		logger.Logger.Infoln("搜索时间:", _time, "ms")
 	}
 	// 处理分页
 	request = request.GetAndSetDefault()
@@ -470,20 +485,20 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 	trie.SetNodeFailPoint()
 
 	if e.IsDebug {
-		log.Println("ACTrie init Success! 耗时: ", time.Since(tim))
+		logger.Logger.Infoln("ACTrie init Success! 耗时: ", time.Since(tim))
 	}
 
 	_time = utils.ExecTime(func() {
 
 		pager := new(pagination.Pagination)
-		var resultIds []models.SliceItem
+		var resultIds []pagination.DocItem
 		_tt := utils.ExecTime(func() {
 			resultIds = fastSort.GetAll()
 		})
 
 		if e.IsDebug {
-			log.Println("处理排序耗时", _tt, "ms")
-			log.Println("结果集大小", len(resultIds))
+			logger.Logger.Infoln("处理排序耗时", _tt, "ms")
+			logger.Logger.Infoln("结果集大小", len(resultIds))
 		}
 
 		pager.Init(request.Limit, len(resultIds))
@@ -494,13 +509,12 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 		if pager.PageCount != 0 {
 
 			start, end := pager.GetPage(request.Page)
-			log.Println("start: ", start, " --- end: ", end)
 			if start == -1 {
 				return
 			}
 			items := resultIds[start : end+1]
 			if e.IsDebug {
-				log.Println("Page: ", "start ", start, "end ", end)
+				logger.Logger.Infoln("Page: ", "start ", start, "end ", end)
 			}
 
 			result.Documents = make([]models.ResponseDoc, len(items))
@@ -511,14 +525,14 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 			//只读取前面 limit 个
 			_tt := time.Now()
 			for index, item := range items {
-				go func(index int, item models.SliceItem) {
+				go func(index int, item pagination.DocItem) {
 					defer wg.Done()
 
 					_cost := time.Now()
 					buf := e.GetDocById(item.Id)
 
 					if e.IsDebug {
-						log.Println("Id: ", item.Id, "--- GetDocById: ", time.Since(_cost), "--- 数据长度: ", len(buf))
+						logger.Logger.Infoln("Id: ", item.Id, "--- GetDocById: ", time.Since(_cost), "--- 数据长度: ", len(buf))
 					}
 
 					storageDoc := new(doc.StorageIndexDoc)
@@ -564,13 +578,13 @@ func (e *Engine) MultiSearch(request *models.SearchRequest) *models.SearchResult
 			wg.Wait()
 
 			if e.IsDebug {
-				log.Println("分页耗时: ", time.Since(_tt))
+				logger.Logger.Infoln("分页耗时: ", time.Since(_tt))
 			}
 
 		}
 	})
 	if e.IsDebug {
-		log.Println("处理数据耗时：", _time, "ms")
+		logger.Logger.Infoln("处理数据耗时：", _time, "ms")
 	}
 
 	return result
@@ -592,7 +606,7 @@ func (e *Engine) SimpleSearch(word string, key uint32, call func(ranks []*models
 
 		results := make([]*models.SliceItem, len(array.StorageIds))
 		if e.IsDebug {
-			log.Println("读数据时间: ", time.Since(_time), "--- word: ", word, "--- key: ", key, "--- Ids长度:", len(array.StorageIds))
+			logger.Logger.Infoln("读数据时间: ", time.Since(_time), "--- word: ", word, "--- key: ", key, "--- Ids长度:", len(array.StorageIds))
 		}
 
 		for index, id := range array.StorageIds { // 遍历 ids
@@ -613,14 +627,14 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 	//等待搜索初始化完成
 
 	if e.IsDebug {
-		log.Println("Search start")
+		logger.Logger.Infoln("Search start -------------------")
 	}
 
 	e.Wait()
 	//分词搜索
 	words := e.WordCut(request.Query, request.FilterWord)
 	if e.IsDebug {
-		log.Println("分词数: ", len(words))
+		logger.Logger.Infoln("分词数: ", len(words))
 	}
 
 	var lock sync.Mutex
@@ -641,11 +655,11 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 		}
 
 		wg.Wait()
-		fastSort = pagination.FastSort{ScoreMap: make(map[uint32]float32, int(float32(len(allValues))*1.5))} // 预分配空间，优化效率
+		fastSort = pagination.FastSort{ScoreMap: make(map[uint32]*pagination.DocScore, int(float32(len(allValues))*1.5))} // 预分配空间，优化效率
 		fastSort.Add(allValues)
 	})
 	if e.IsDebug {
-		log.Println("搜索时间:", _time, "ms")
+		logger.Logger.Infoln("搜索时间:", _time, "ms")
 	}
 	// 处理分页
 	request = request.GetAndSetDefault()
@@ -663,14 +677,14 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 	_time = utils.ExecTime(func() {
 
 		pager := new(pagination.Pagination)
-		var resultIds []models.SliceItem
+		var resultIds []pagination.DocItem
 		_tt := utils.ExecTime(func() {
 			resultIds = fastSort.GetAll()
 		})
 
 		if e.IsDebug {
-			log.Println("处理排序耗时", _tt, "ms")
-			log.Println("结果集大小", len(resultIds))
+			logger.Logger.Infoln("处理排序耗时", _tt, "ms")
+			logger.Logger.Infoln("结果集大小", len(resultIds))
 		}
 
 		pager.Init(request.Limit, len(resultIds))
@@ -687,7 +701,7 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 
 			items := resultIds[start : end+1]
 			if e.IsDebug {
-				log.Println("Page: ", "start ", start, "end ", end)
+				logger.Logger.Infoln("Page: ", "start ", start, "end ", end)
 			}
 
 			result.Documents = make([]models.ResponseUrl, len(items))
@@ -697,13 +711,13 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 			//只读取前面 limit 个
 			_tt := time.Now()
 			for index, item := range items {
-				go func(index int, item models.SliceItem) {
+				go func(index int, item pagination.DocItem) {
 					defer wg.Done()
 					_cost := time.Now()
 					buf := e.GetDocById(item.Id)
 
 					if e.IsDebug {
-						log.Println("Id: ", item.Id, "--- GetDocById: ", time.Since(_cost), "--- 数据长度: ", len(buf))
+						logger.Logger.Infoln("Id: ", item.Id, "--- GetDocById: ", time.Since(_cost), "--- 数据长度: ", len(buf))
 					}
 
 					result.Documents[index].Score = item.Score
@@ -740,12 +754,12 @@ func (e *Engine) MultiSearchPicture(request *models.SearchRequest) *models.Searc
 			wg.Wait() // 等待并发结束
 
 			if e.IsDebug {
-				log.Println("分页耗时: ", time.Since(_tt))
+				logger.Logger.Infoln("分页耗时: ", time.Since(_tt))
 			}
 		}
 	})
 	if e.IsDebug {
-		log.Println("处理数据耗时：", _time, "ms")
+		logger.Logger.Infoln("处理数据耗时：", _time, "ms")
 	}
 
 	return result
@@ -765,11 +779,11 @@ func pictureSearchGetRemote(url string) ([]byte, error) {
 	// 使用完成后要关闭，不然会占用内存
 	defer res.Body.Close()
 	// 读取字节流
-	bytes, err := ioutil.ReadAll(res.Body)
+	byteArray, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
-	return bytes, err
+	return byteArray, err
 }
 func pictureCompress(buf []byte) ([]byte, error) {
 	//文件压缩

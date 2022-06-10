@@ -8,7 +8,6 @@ import (
 	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/trie"
 	"lgdSearch/router"
-	"log"
 	"os"
 	"os/signal"
 )
@@ -59,10 +58,10 @@ func main() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	<-c
-	log.Println("程序即将结束")
+	logger.Logger.Infoln("程序即将结束 -----------------------------")
 	trie.Tree.FlushIndex(pkg.DefaultTriePath())
 	trie.GetHotSearch().Flush(pkg.DefaultHotSearchPath())
 	PkgEngine.Close()
 
-	log.Fatal("program interrupted")
+	logger.Logger.Fatal("program interrupted.\n\n\n")
 }

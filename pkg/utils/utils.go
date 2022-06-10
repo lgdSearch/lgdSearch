@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io/ioutil"
+	"lgdSearch/pkg/logger"
 	"log"
 	"os"
 	"time"
@@ -74,7 +75,7 @@ func Compression(data []byte) []byte {
 
 	write.Write(data)
 	write.Flush()
-	log.Println("原大小：", len(data), "压缩后大小：", buf.Len(), "压缩率：", fmt.Sprintf("%.2f", float32(buf.Len())*100/float32(len(data))), "%")
+	logger.Logger.Infoln("原大小：", len(data), "压缩后大小：", buf.Len(), "压缩率：", fmt.Sprintf("%.2f", float32(buf.Len())*100/float32(len(data))), "%")
 	return buf.Bytes()
 }
 
@@ -109,8 +110,7 @@ func Read(data interface{}, filename string) {
 	dec := gob.NewDecoder(buffer)
 	err = dec.Decode(data)
 	if err != nil {
-		//panic(err)
-		log.Println("Decode Error: ", err, "buffer.Bytes() is :", buffer.Bytes())
+		logger.Logger.Infoln("Decode Error: ", err, "buffer.Bytes() is :", buffer.Bytes())
 	}
 }
 
@@ -119,59 +119,8 @@ func StringToInt(value string) uint32 {
 	return crc32.ChecksumIEEE([]byte(value)) // crc32hash
 }
 
-func Uint32Comparator(a, b interface{}) int {
-	aAsserted := a.(uint32)
-	bAsserted := b.(uint32)
-	switch {
-	case aAsserted > bAsserted:
-		return 1
-	case aAsserted < bAsserted:
-		return -1
-	default:
-		return 0
-	}
-}
-
 func Uint32ToBytes(i uint32) []byte {
 	var buf = make([]byte, 4)
 	binary.BigEndian.PutUint32(buf, i)
 	return buf
-}
-
-func BytesToUint32(buf []byte) uint32 {
-	return binary.BigEndian.Uint32(buf)
-}
-
-// QuickSortAsc 快速排序
-func QuickSortAsc(arr []int, start, end int, cmp func(int, int)) {
-	if start < end {
-		i, j := start, end
-		key := arr[(start+end)/2]
-		for i <= j {
-			for arr[i] < key {
-				i++
-			}
-			for arr[j] > key {
-				j--
-			}
-			if i <= j {
-				arr[i], arr[j] = arr[j], arr[i]
-				if cmp != nil {
-					cmp(i, j)
-				}
-				i++
-				j--
-			}
-		}
-
-		if start < j {
-			QuickSortAsc(arr, start, j, cmp)
-		}
-		if end > i {
-			QuickSortAsc(arr, i, end, cmp)
-		}
-	}
-}
-func DeleteArray(array []uint32, index int) []uint32 {
-	return append(array[:index], array[index+1:]...)
 }
