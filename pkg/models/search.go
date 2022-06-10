@@ -8,11 +8,12 @@ type Highlight struct {
 
 // SearchRequest 搜索请求
 type SearchRequest struct {
-	Query      string     `json:"query,omitempty"`      // 搜索关键词
-	Page       int        `json:"page,omitempty"`       // 页码
-	Limit      int        `json:"limit,omitempty"`      // 每页大小，最大1000，超过报错
-	FilterWord []string   `json:"filterWord,omitempty"` // 关键词过滤
-	Highlight  *Highlight `json:"highlight,omitempty"`  // 关键词高了
+	Query      string        `json:"query,omitempty"`      // 搜索关键词
+	Page       int           `json:"page,omitempty"`       // 页码
+	Limit      int           `json:"limit,omitempty"`      // 每页大小，最大1000，超过报错
+	FilterWord []string      `json:"filterWord,omitempty"` // 关键词过滤
+	Highlight  *Highlight    `json:"highlight,omitempty"`  // 关键词高了
+	Likes      map[uint]Docs `json:"likes,omitempty"`      // 用户收藏
 }
 
 func (s *SearchRequest) GetAndSetDefault() *SearchRequest {
