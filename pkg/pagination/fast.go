@@ -1,27 +1,46 @@
 package pagination
 
 import (
+	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/models"
-	"log"
 	"sort"
 	"time"
 )
 
-type ScoreSlice []models.SliceItem
+type ScoreSlice []DocItem
 
 func (x ScoreSlice) Len() int {
 	return len(x)
 }
+
 func (x ScoreSlice) Less(i, j int) bool {
-	return x[i].Score < x[j].Score
+	if x[i].Count != x[j].Count {
+		return x[i].Count < x[j].Count
+	} else {
+		return x[i].Score < x[j].Score
+	}
 }
+
 func (x ScoreSlice) Swap(i, j int) {
 	x[i], x[j] = x[j], x[i]
 }
 
+type DocScore struct {
+	// 分词总分数
+	score float32
+
+	// 符合分词个数
+	count int
+}
+
+type DocItem struct {
+	Id    uint32
+	Score float32
+	Count int
+}
+
 type FastSort struct {
-	ScoreMap map[uint32]float32
-	Data     []*models.SliceItem
+	ScoreMap map[uint32]*DocScore
 }
 
 // Add :Count the scores of all documents
@@ -30,7 +49,13 @@ func (f *FastSort) Add(values []*models.SliceItem) {
 		return
 	}
 	for _, item := range values {
-		f.ScoreMap[item.Id] += item.Score
+		_, ok := f.ScoreMap[item.Id]
+		if ok {
+			f.ScoreMap[item.Id].score += item.Score
+			f.ScoreMap[item.Id].count += 1
+		} else {
+			f.ScoreMap[item.Id] = &DocScore{score: item.Score, count: 1}
+		}
 	}
 }
 
@@ -40,10 +65,10 @@ func (f *FastSort) Count() int {
 }
 
 // GetAll 获取按 score 排序后的结果集
-func (f *FastSort) GetAll() []models.SliceItem {
+func (f *FastSort) GetAll() []DocItem {
 	delete(f.ScoreMap, 0) // 如果有 0 去掉
 
-	var result = make([]models.SliceItem, len(f.ScoreMap))
+	var result = make([]DocItem, len(f.ScoreMap))
 
 	_time := time.Now()
 	index := 0
@@ -51,14 +76,14 @@ func (f *FastSort) GetAll() []models.SliceItem {
 		if key == 0 {
 			continue
 		}
-		result[index] = models.SliceItem{Id: key, Score: value}
+		result[index] = DocItem{Id: key, Score: value.score, Count: value.count}
 		index++
 	}
-	log.Println("fastSort: 取数据耗时", time.Since(_time))
+	logger.Logger.Infoln("fastSort: 取数据耗时", time.Since(_time))
 
 	_time = time.Now()
 	sort.Sort(sort.Reverse(ScoreSlice(result)))
-	log.Println("fastSort: 排序耗时", time.Since(_time))
+	logger.Logger.Infoln("fastSort: 排序耗时", time.Since(_time))
 
 	return result
 }
