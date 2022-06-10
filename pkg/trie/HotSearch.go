@@ -2,6 +2,7 @@ package trie
 
 import (
 	"container/heap"
+	"fmt"
 	"lgdSearch/pkg/utils"
 	"os"
 	"runtime"
@@ -12,7 +13,6 @@ import (
 const HotSearchFileName = "HotSearch.txt"
 
 // hotSearch use a map and a queue to get top 10 hotSearch message from today's search message
-// 使用定时任务，10分钟更新一次热榜，数据通过map存储和维护，queue中存词条进入的时间和内容，那么过时间了就pop,并维护map
 type queueNode struct {
 	TimeMessage time.Time
 	Text        string
@@ -51,7 +51,7 @@ func (q *queue) Pop() *queueNode {
 	top := q.head
 	q.head = q.head.Next
 	q.size -= 1
-	if q.size == 0 { // 可以不写，其实是不影响的，不过考虑严谨性还是写了
+	if q.size == 0 {
 		q.end = nil
 	}
 	return top
@@ -98,6 +98,42 @@ func (hot *HotSearch) Array() []*HotSearchMessage {
 	return hot.hotSearchArray
 }
 
+func (hot *HotSearch) Map() *map[string]int {
+	return &hot.searchMessage
+}
+
+func (hot *HotSearch) Queue() *queue {
+	return hot.searchQueue
+}
+
+func (hot *HotSearch) showQueueElement() {
+	fmt.Println("Queue start -----------")
+	index := 0
+	for head := hot.searchQueue.head; head != nil; head = head.Next {
+		fmt.Println("index: ", index, "Text: ", head.Text, "Time: ", head.TimeMessage)
+		index++
+	}
+	fmt.Println("Queue end -------------")
+}
+
+func (hot *HotSearch) showMapElement() {
+	fmt.Println("Map start -----------")
+	index := 0
+	for k, v := range hot.searchMessage {
+		fmt.Println("index: ", index, "key: ", k, "value: ", v)
+		index++
+	}
+	fmt.Println("Map end -------------")
+}
+
+func (hot *HotSearch) showArrayElement() {
+	fmt.Println("Array start ----------")
+	for index, val := range hot.hotSearchArray {
+		fmt.Println("index: ", index, "val: ", val)
+	}
+	fmt.Println("Array end ------------")
+}
+
 type HotSearchMessage struct {
 	Text string `json:"text,omitempty"`
 	Num  int    `json:"num,omitempty"`
@@ -138,6 +174,9 @@ func (hot *HotSearch) OutQueueExec() {
 			time.Now().Sub(hot.searchQueue.Top().TimeMessage).Hours() > 24. {
 			node := hot.searchQueue.Pop()
 			hot.searchMessage[node.Text]--
+			if hot.searchMessage[node.Text] == 0 { // 0 -> delete
+				delete(hot.searchMessage, node.Text)
+			}
 		}
 		// 如果考虑数据量的写法
 		// if hot.searchQueue.Size() > 10000000 {}
@@ -212,11 +251,8 @@ func (hot *HotSearch) Flush(filepath string) {
 	data := make([]queueNode, 0)
 	for head := hot.searchQueue.head; head != nil; head = head.Next {
 		data = append(data, queueNode{Text: head.Text, TimeMessage: head.TimeMessage, Next: nil})
-		if head == head.Next {
-			break
-		}
 	}
-	file, _ := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC, 0600)
+	file, _ := os.OpenFile(filepath, os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0600) // 清空
 	file.Close()
 
 	utils.Write(&data, filepath)
@@ -228,8 +264,8 @@ func (hot *HotSearch) Load(filepath string) {
 	}
 	data := make([]queueNode, 0)
 	utils.Read(&data, filepath)
-	for _, val := range data {
-		hot.searchQueue.Push(&val)
+	for _, val := range data { // 这里的val是单个变量，是不可以直接插入的
+		hot.searchQueue.Push(&queueNode{Text: val.Text, TimeMessage: val.TimeMessage})
 		hot.searchMessage[val.Text]++
 	}
 }

@@ -38,14 +38,14 @@ func QueryFavorites (userId, limit, offset uint) ([]models.Favorite, int64, erro
 	return favorites, total, err
 }
 
-func QueryFavorite (favId uint, name string) (*models.Favorite, error) {
+func QueryFavorite (userId, favId uint, name string) (*models.Favorite, error) {
 	var fav models.Favorite
 	var result *gorm.DB
 	// 优先使用id查询
 	if(favId != 0) {
-		result = db.Engine.First(&fav, favId)
+		result = db.Engine.First(&fav, "id = ? AND user_id = ?", favId, userId)
 	}else {
-		result = db.Engine.First(&fav, "name = ?", name)
+		result = db.Engine.First(&fav, "name = ? AND user_id = ?", name, userId)
 	}
 	if result.Error != nil {
 		return &fav, result.Error
@@ -73,13 +73,13 @@ func DeleteDoc (favId, docId uint) error {
 	return result.Error
 }
 
-func QueryDoc (docId uint, docIndex uint) (*models.Doc, error) {
+func QueryDoc (favId, docId, docIndex uint) (*models.Doc, error) {
 	docs := models.Doc{}
 	var result *gorm.DB
 	if docId != 0 {
-		result = db.Engine.First(&docs, docId)
+		result = db.Engine.First(&docs, "id = ? AND favorite_id = ?", docId, favId)
 	}else {
-		result = db.Engine.First(&docs, "doc_index = ?", docIndex)
+		result = db.Engine.First(&docs, "doc_index = ? AND favorite_id = ?", docIndex, favId)
 	}
 	return &docs, result.Error
 }
