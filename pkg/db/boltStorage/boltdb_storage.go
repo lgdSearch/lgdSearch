@@ -7,7 +7,6 @@ import (
 type BoltdbStorage struct {
 	db   *bolt.DB
 	path string
-	//sync.Mutex
 }
 
 func Open(path string) (*BoltdbStorage, error) {
@@ -23,9 +22,6 @@ func Open(path string) (*BoltdbStorage, error) {
 
 // CreateBucket 创建一个桶
 func (s *BoltdbStorage) CreateBucket(bucketName []byte) error {
-	//s.Lock()
-	//defer s.Unlock()
-
 	return s.db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucket(bucketName)
 		return err
@@ -34,9 +30,6 @@ func (s *BoltdbStorage) CreateBucket(bucketName []byte) error {
 
 // DeleteBucket 删除一个桶
 func (s *BoltdbStorage) DeleteBucket(bucketName []byte) error {
-	//s.Lock()
-	//defer s.Unlock()
-
 	return s.db.Update(func(tx *bolt.Tx) error {
 		return tx.DeleteBucket(bucketName)
 	})
@@ -44,9 +37,6 @@ func (s *BoltdbStorage) DeleteBucket(bucketName []byte) error {
 
 // CreateBucketIfNotExist 如果桶不存在则创建
 func (s *BoltdbStorage) CreateBucketIfNotExist(bucketName []byte) error {
-	//s.Lock()
-	//defer s.Unlock()
-
 	return s.db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists(bucketName)
 		return err
@@ -70,9 +60,6 @@ func (s *BoltdbStorage) Get(key []byte, bucketName []byte) ([]byte, bool) {
 }
 
 func (s *BoltdbStorage) Set(key []byte, value []byte, bucketName []byte) error {
-	//s.Lock()
-	//defer s.Unlock()
-
 	err := s.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucketName)
 		err := b.Put(key, value)
@@ -84,9 +71,6 @@ func (s *BoltdbStorage) Set(key []byte, value []byte, bucketName []byte) error {
 
 // Delete 删除
 func (s *BoltdbStorage) Delete(key []byte, bucketName []byte) error {
-	//s.Lock()
-	//defer s.Unlock()
-
 	err := s.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucketName)
 		return b.Delete(key)

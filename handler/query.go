@@ -12,5 +12,3 @@ func MultiSearch(request *models.SearchRequest) *models.SearchResult {
 
 	return pkg.SearchEngine.MultiSearch(request)
 }
-
-// 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

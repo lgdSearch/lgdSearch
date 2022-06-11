@@ -16,8 +16,6 @@ func (h MaxHeap) Less(i, j int) bool {
 func (h MaxHeap) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
 
 func (h *MaxHeap) Push(x interface{}) {
-	// Push and Pop use pointer receivers because they modify the slice's length,
-	// not just its contents.
 	*h = append(*h, x.(*heapNode))
 }
 

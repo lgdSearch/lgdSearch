@@ -9,7 +9,6 @@ import (
 	"hash/crc32"
 	"io/ioutil"
 	"lgdSearch/pkg/logger"
-	"log"
 	"os"
 	"time"
 )
@@ -30,7 +29,7 @@ func Write(data interface{}, filename string) {
 		panic(err)
 	}
 
-	log.Println("Write:", filename)
+	logger.Logger.Infoln("Write:", filename)
 	compressData := Compression(buffer.Bytes())
 	err = ioutil.WriteFile(filename, compressData, 0600)
 	if err != nil {

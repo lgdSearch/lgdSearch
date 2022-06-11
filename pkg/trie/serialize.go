@@ -122,7 +122,7 @@ func (t *Trie) automaticFlush(filepath string) {
 			size = t.size
 			t.FlushIndex(filepath)
 		}
-		//定时GC
+
 		runtime.GC()
 	}
 

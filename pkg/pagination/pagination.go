@@ -14,8 +14,6 @@ type Pagination struct {
 func (p *Pagination) Init(limit int, total int) {
 	p.Limit = limit
 
-	//计算总页数
-
 	p.Total = total
 
 	pageCount := math.Ceil(float64(total) / float64(limit))
@@ -25,15 +23,14 @@ func (p *Pagination) Init(limit int, total int) {
 
 func (p *Pagination) GetPage(page int) (s int, e int) {
 	//获取指定页数的数据
-	if page > p.PageCount {
-		//page = p.PageCount
+	if page > p.PageCount { // 范围超出，不返回
 		return -1, -1
 	}
 	if page < 0 {
 		page = 1
 	}
 
-	//从1开始
+	//从 0 开始
 	page -= 1
 
 	//计算起始位置
@@ -49,5 +46,4 @@ func (p *Pagination) GetPage(page int) (s int, e int) {
 	}
 
 	return start, end
-
 }

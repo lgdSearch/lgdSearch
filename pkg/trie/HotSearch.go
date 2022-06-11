@@ -154,8 +154,6 @@ func (h hotHeap) Less(i, j int) bool {
 func (h hotHeap) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
 
 func (h *hotHeap) Push(x interface{}) {
-	// Push and Pop use pointer receivers because they modify the slice's length,
-	// not just its contents.
 	*h = append(*h, x.(*HotSearchMessage))
 }
 
@@ -169,7 +167,7 @@ func (h *hotHeap) Pop() interface{} {
 
 func (hot *HotSearch) OutQueueExec() {
 	for {
-		// 这是考虑时效性的写法
+		// 保留 24 小时内数据
 		if hot.searchQueue.Size() != 0 &&
 			time.Now().Sub(hot.searchQueue.Top().TimeMessage).Hours() > 24. {
 			node := hot.searchQueue.Pop()
@@ -178,8 +176,6 @@ func (hot *HotSearch) OutQueueExec() {
 				delete(hot.searchMessage, node.Text)
 			}
 		}
-		// 如果考虑数据量的写法
-		// if hot.searchQueue.Size() > 10000000 {}
 	}
 }
 
@@ -211,13 +207,12 @@ func (hot *HotSearch) AutoReGetArray(filepath string) {
 		hot.ReGetArray()
 		hot.Flush(filepath)
 
-		//定时GC
 		runtime.GC()
 	}
 }
 
 func (hot *HotSearch) ReGetArray() {
-	hot.Lock() // lock 所以需要一个 chan 来暂存这些 query
+	hot.Lock()
 	defer hot.Unlock()
 
 	minHeap := hotHeap{} // string 的 minheap

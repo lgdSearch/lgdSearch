@@ -292,6 +292,9 @@ func filterMapInit() {
 	wordFilterMap["无"] = nil
 	wordFilterMap["都"] = nil
 	wordFilterMap["也"] = nil
+	wordFilterMap["这"] = nil
+	wordFilterMap["是"] = nil
+	wordFilterMap["好"] = nil
 	wordFilterMap["【"] = nil
 	wordFilterMap["】"] = nil
 	wordFilterMap["《"] = nil
@@ -305,6 +308,7 @@ func filterMapInit() {
 	wordFilterMap["："] = nil
 	wordFilterMap["（"] = nil
 	wordFilterMap["）"] = nil
+	wordFilterMap["什么"] = nil
 }
 
 func (e *Engine) WordCutFilter(text string) ([]uint32, map[uint32]float32) {
@@ -350,9 +354,9 @@ func (e *Engine) WordCutFilter(text string) ([]uint32, map[uint32]float32) {
 	}
 	lenWords := float32(len(words))
 	for index, val := range words { // 越前面的比重越大
-		// math.log10(10 + index) 是为了平衡 index=10,len=10 和 index=5000,len=10000的情况
+		// math.log10(10 + index) 是为了平衡 f(index=10,len=10) 和 f(index=5000,len=10000)的情况
 		// 这种情况下 f(10, 10) > f(5000, 10000), etc...
-		// f(10, 10000) > f(10, 10) > f(5000, 10000)
+		// 目的是使得 f(10, 10000) > f(10, 10) > f(5000, 10000)
 		keyMap[val] += float32(2*len(words)-index+1) / (float32(math.Log10(float64(10+index))) * lenWords)
 	}
 
@@ -824,7 +828,6 @@ func (e *Engine) putInOSS(url string, id uint32) bool {
 		//fmt.Println(err)
 		return false
 	}
-	//get()
 	//Endpoint以杭州为例，其它Region请按实际情况填写。
 	endpoint := "http://oss-cn-hangzhou.aliyuncs.com"
 	// 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
