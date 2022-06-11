@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import get_feature_pb2 as get__feature__pb2
+import search_pb2 as search__pb2
 
 
 class GrpcServiceStub(object):
@@ -14,17 +14,17 @@ class GrpcServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.getFeature = channel.unary_unary(
-                '/GrpcService/getFeature',
-                request_serializer=get__feature__pb2.Request.SerializeToString,
-                response_deserializer=get__feature__pb2.Response.FromString,
+        self.search = channel.unary_unary(
+                '/GrpcService/search',
+                request_serializer=search__pb2.Request.SerializeToString,
+                response_deserializer=search__pb2.Response.FromString,
                 )
 
 
 class GrpcServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def getFeature(self, request, context):
+    def search(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -33,10 +33,10 @@ class GrpcServiceServicer(object):
 
 def add_GrpcServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'getFeature': grpc.unary_unary_rpc_method_handler(
-                    servicer.getFeature,
-                    request_deserializer=get__feature__pb2.Request.FromString,
-                    response_serializer=get__feature__pb2.Response.SerializeToString,
+            'search': grpc.unary_unary_rpc_method_handler(
+                    servicer.search,
+                    request_deserializer=search__pb2.Request.FromString,
+                    response_serializer=search__pb2.Response.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -49,7 +49,7 @@ class GrpcService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def getFeature(request,
+    def search(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,8 +59,8 @@ class GrpcService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/GrpcService/getFeature',
-            get__feature__pb2.Request.SerializeToString,
-            get__feature__pb2.Response.FromString,
+        return grpc.experimental.unary_unary(request, target, '/GrpcService/search',
+            search__pb2.Request.SerializeToString,
+            search__pb2.Response.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

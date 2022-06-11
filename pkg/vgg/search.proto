@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package="./search";
+
+option cc_generic_services = true;
+
+service GrpcService {
+    rpc search (Request) returns (Response) {}
+}
+
+message Request {
+    bytes image = 1;
+}
+
+message Response {
+    repeated uint32 ids = 1;
+}

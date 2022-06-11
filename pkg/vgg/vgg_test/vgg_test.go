@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-func TestGetFeature(t *testing.T) {
+func TestSearch(t *testing.T) {
 	fp, err := os.Open("char.jpg")
 	if err != nil {
 		t.Error(err.Error())
@@ -17,9 +17,9 @@ func TestGetFeature(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	result, err := vgg.GetFeature(bytes)
+	result, err := vgg.Search(bytes)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	println(result)
+	t.Error(result)
 }
