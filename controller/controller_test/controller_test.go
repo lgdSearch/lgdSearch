@@ -15,6 +15,12 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
+	"os"
+	"bytes"
+	"mime/multipart"
+	"io"
+	"net/http"
+	"net/http/httptest"
 )
 
 var engine *gin.Engine
@@ -320,5 +326,56 @@ func TestGetDocs(t *testing.T) {
 	json.Unmarshal(body, &doc)
 	if len(doc.Docs) != 2 {
 		t.Error("offset incorrect")
+	}
+}
+
+func TestImageSearch(t *testing.T) {
+	uri := "/image_search"
+	imgPath := "./char.jpg"
+	file, err := os.Open(imgPath)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", imgPath)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	_, err = io.Copy(part, file)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	err = writer.Close()
+	if err != nil {
+		t.Error(err.Error())
+	}
+	request, err := http.NewRequest("POST", uri, body)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	request.Header.Set("Content-Type", writer.FormDataContentType())
+	// 初始化响应
+	w := httptest.NewRecorder()
+	// 调用相应的handler接口
+	engine.ServeHTTP(w, request)
+	r := w.Result()
+	defer r.Body.Close()
+	b, _ := ioutil.ReadAll(r.Body)
+	if w.Code != 200 {
+		t.Errorf("code:%d err:%v", w.Code, string(b))
+	}
+	resp := &payloads.ImageSearchResp{}
+	json.Unmarshal(b, resp)
+	fd, err := os.Create("./test.jpg")
+	if err != nil {
+		t.Error(err.Error())
+	}
+	defer fd.Close()
+	_, err = fd.Write(resp.Images[0])
+	if err != nil {
+		t.Error(err.Error())
 	}
 }

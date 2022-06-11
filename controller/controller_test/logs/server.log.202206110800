@@ -1,0 +1,267 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] GET    /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] GET    /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+time="2022-06-11 20:05:41" level=error msg="[ImageSearch] failed to parse request, err: request Content-Type isn't multipart/form-data"
+[GIN] 2022/06/11 - 20:05:41 | 400 |       513.9µs |       192.0.2.1 | GET      "/image_search"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] POST   /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] POST   /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN] 2022/06/11 - 20:24:39 | 200 |    4.4784378s |                 | POST     "/image_search"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] POST   /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN] 2022/06/11 - 20:25:10 | 200 |     9.937632s |                 | POST     "/image_search"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] POST   /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] POST   /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN] 2022/06/11 - 20:26:56 | 200 |    4.6900428s |                 | POST     "/image_search"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] POST   /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /login                    --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LoginHandler-fm (4 handlers)
+[GIN-debug] PUT    /register                 --> lgdSearch/controller.Register (4 handlers)
+[GIN-debug] PUT    /users/logout             --> github.com/appleboy/gin-jwt/v2.(*GinJWTMiddleware).LogoutHandler-fm (5 handlers)
+[GIN-debug] DELETE /users                    --> lgdSearch/controller.DeleteAccount (5 handlers)
+[GIN-debug] PATCH  /users/nickname           --> lgdSearch/controller.UpdateNickname (5 handlers)
+[GIN-debug] GET    /users/profile            --> lgdSearch/controller.GetProfile (5 handlers)
+[GIN-debug] PUT    /users/favorites          --> lgdSearch/controller.AddFavorite (5 handlers)
+[GIN-debug] PATCH  /users/favorites/:fav_id/name --> lgdSearch/controller.UpdateFavoriteName (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id  --> lgdSearch/controller.DeleteFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id  --> lgdSearch/controller.GetFavorite (5 handlers)
+[GIN-debug] GET    /users/favorites          --> lgdSearch/controller.GetFavorites (5 handlers)
+[GIN-debug] GET    /users/favorites/docs     --> lgdSearch/controller.GetAllDocs (5 handlers)
+[GIN-debug] PUT    /users/favorites/:fav_id/docs --> lgdSearch/controller.AddDoc (5 handlers)
+[GIN-debug] DELETE /users/favorites/:fav_id/docs/:doc_id --> lgdSearch/controller.DeleteDoc (5 handlers)
+[GIN-debug] GET    /users/favorites/:fav_id/docs --> lgdSearch/controller.GetDocs (5 handlers)
+[GIN-debug] POST   /query                    --> lgdSearch/controller.Query (4 handlers)
+[GIN-debug] POST   /query/picture            --> lgdSearch/controller.QueryPicture (4 handlers)
+[GIN-debug] GET    /query/hotSearch          --> lgdSearch/controller.HotSearch (4 handlers)
+[GIN-debug] GET    /book/:text               --> lgdSearch/controller.GetRelatedSearch (4 handlers)
+[GIN-debug] POST   /image_search             --> lgdSearch/controller.ImageSearch (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9090
+[GIN] 2022/06/11 - 20:28:38 | 200 |    4.7453315s |                 | POST     "/image_search"

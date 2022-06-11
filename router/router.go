@@ -19,7 +19,6 @@ func Init() *gin.Engine {
 	auth := middleware.GetJWTMiddle()
 	engine.POST("/login", auth.LoginHandler)
 	engine.PUT("/register", controller.Register)
-
 	users := engine.Group("/users")
 	users.Use(auth.MiddlewareFunc())
 	{
@@ -44,6 +43,7 @@ func Init() *gin.Engine {
 	engine.POST("/query/picture", controller.QueryPicture) // 查询图片
 	engine.GET("/query/hotSearch", controller.HotSearch)   // 热搜
 	engine.GET("/book/:text", controller.GetRelatedSearch) // 相关搜索
+	engine.POST("/image_search", controller.ImageSearch)
 	return engine
 }
 

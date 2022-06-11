@@ -21,5 +21,13 @@ func TestSearch(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	t.Error(result)
+	fd, err := os.Create("./test.jpg")
+	if err != nil {
+		t.Error(err.Error())
+	}
+	defer fd.Close()
+	_, err = fd.Write(result[0])
+	if err != nil {
+		t.Error(err.Error())
+	}
 }
