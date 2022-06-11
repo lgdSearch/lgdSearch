@@ -80,6 +80,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/image_search": {
+            "post": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/payloads.ImageSearchResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerError",
+                        "schema": {
+                            "$ref": "#/definitions/weberror.Info"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "consumes": [
@@ -873,7 +917,22 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": ""
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/payloads.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.DocId"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -1155,6 +1214,25 @@ const docTemplate = `{
                 }
             }
         },
+        "models.DocId": {
+            "type": "object",
+            "properties": {
+                "docId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Docs": {
+            "type": "object",
+            "properties": {
+                "docid": {
+                    "type": "integer"
+                },
+                "favid": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Highlight": {
             "type": "object",
             "properties": {
@@ -1171,8 +1249,20 @@ const docTemplate = `{
         "models.ResponseDoc": {
             "type": "object",
             "properties": {
+                "docsid": {
+                    "description": "收藏id",
+                    "type": "integer"
+                },
+                "favid": {
+                    "description": "收藏夹id",
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "islike": {
+                    "description": "是否被收藏",
+                    "type": "boolean"
                 },
                 "score": {
                     "description": "得分",
@@ -1189,8 +1279,20 @@ const docTemplate = `{
         "models.ResponseUrl": {
             "type": "object",
             "properties": {
+                "docsid": {
+                    "description": "收藏id",
+                    "type": "integer"
+                },
+                "favid": {
+                    "description": "收藏夹id",
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "islike": {
+                    "description": "是否被收藏",
+                    "type": "boolean"
                 },
                 "score": {
                     "type": "number"
@@ -1258,6 +1360,13 @@ const docTemplate = `{
                 "highlight": {
                     "description": "关键词高了",
                     "$ref": "#/definitions/models.Highlight"
+                },
+                "likes": {
+                    "description": "用户收藏",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/models.Docs"
+                    }
                 },
                 "limit": {
                     "description": "每页大小，最大1000，超过报错",
@@ -1427,6 +1536,20 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "payloads.ImageSearchResp": {
+            "type": "object",
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         },

@@ -19,6 +19,18 @@ definitions:
       text:
         type: string
     type: object
+  models.DocId:
+    properties:
+      docId:
+        type: integer
+    type: object
+  models.Docs:
+    properties:
+      docid:
+        type: integer
+      favid:
+        type: integer
+    type: object
   models.Highlight:
     properties:
       postTag:
@@ -30,8 +42,17 @@ definitions:
     type: object
   models.ResponseDoc:
     properties:
+      docsid:
+        description: 收藏id
+        type: integer
+      favid:
+        description: 收藏夹id
+        type: integer
       id:
         type: integer
+      islike:
+        description: 是否被收藏
+        type: boolean
       score:
         description: 得分
         type: number
@@ -42,8 +63,17 @@ definitions:
     type: object
   models.ResponseUrl:
     properties:
+      docsid:
+        description: 收藏id
+        type: integer
+      favid:
+        description: 收藏夹id
+        type: integer
       id:
         type: integer
+      islike:
+        description: 是否被收藏
+        type: boolean
       score:
         type: number
       text:
@@ -91,6 +121,11 @@ definitions:
       highlight:
         $ref: '#/definitions/models.Highlight'
         description: 关键词高了
+      likes:
+        additionalProperties:
+          $ref: '#/definitions/models.Docs'
+        description: 用户收藏
+        type: object
       limit:
         description: 每页大小，最大1000，超过报错
         type: integer
@@ -205,6 +240,15 @@ definitions:
       username:
         type: string
     type: object
+  payloads.ImageSearchResp:
+    properties:
+      images:
+        items:
+          items:
+            type: integer
+          type: array
+        type: array
+    type: object
   payloads.LoginReq:
     properties:
       password:
@@ -315,6 +359,33 @@ paths:
           description: InternalServerError
           schema:
             $ref: '#/definitions/weberror.Info'
+      tags:
+      - search
+  /image_search:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/payloads.ImageSearchResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/weberror.Info'
+        "500":
+          description: InternalServerError
+          schema:
+            $ref: '#/definitions/weberror.Info'
+      security:
+      - Token: []
       tags:
       - search
   /login:
@@ -777,7 +848,14 @@ paths:
       - application/json
       responses:
         "201":
-          description: ""
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/payloads.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.DocId'
+              type: object
         "400":
           description: Bad Request
           schema:
