@@ -10,6 +10,7 @@
 + [搜文档|搜图片](./docs/search.md)
 + [相关搜索](./docs/related_search.md)
 + [持久化](./docs/storage.md)
++ [以图搜图](./docs/imageSearch.md)
 
 ## 技术栈
 
@@ -22,6 +23,10 @@
 + boltdb
 + badgerdb
 + colfer序列化
++ grpc
++ ResNet50
++ diskcache
++ milvus
 
 ## 目录结构
 ```
@@ -55,7 +60,7 @@
     |   |   |-- colf           colf序列化工具库
     |   |       |-- doc        doc序列化
     |   |       |-- keyIds     keyIds序列化
-    |   |-- vgg                图片特征值提取
+    |   |-- vgg                以图搜图
     |   |-- weberror           接口返回错误用时使用的结构体
     |-- router                 gin接口路由
 ```
