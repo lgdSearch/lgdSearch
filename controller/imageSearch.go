@@ -1,13 +1,15 @@
 package controller
 
 import (
-	"io/ioutil"
 	"lgdSearch/payloads"
 	"lgdSearch/pkg/logger"
 	"lgdSearch/pkg/vgg"
 	"lgdSearch/pkg/weberror"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"github.com/nfnt/resize"
+    "image/jpeg"
+	"bytes"
 )
 
 // 以图搜图
@@ -29,13 +31,33 @@ func ImageSearch(c *gin.Context) {
 		return
 	}
 	defer file.Close()
-	img, err := ioutil.ReadAll(file)
+	// img, err := ioutil.ReadAll(file)
+	// if err != nil {
+	// 	logger.Logger.Errorf("[ImageSearch] failed to read file, err: %s", err.Error())
+	// 	c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+	// 	return
+	// }
+	img, err := jpeg.Decode(file)
 	if err != nil {
-		logger.Logger.Errorf("[ImageSearch] failed to read file, err: %s", err.Error())
+		logger.Logger.Errorf("[ImageSearch] failed to decode, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
 		return
 	}
-	imgs, err := vgg.Search(img)
+	newImage := resize.Resize(224, 224, img, resize.NearestNeighbor)
+	if err != nil {
+		logger.Logger.Errorf("[ImageSearch] failed to encode, err: %s", err.Error())
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, newImage, nil)
+	if err != nil {
+		logger.Logger.Errorf("[ImageSearch] failed to encode, err: %s", err.Error())
+		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+	bImage := buf.Bytes()
+	imgs, err := vgg.Search(bImage)
 	if err != nil {
 		logger.Logger.Errorf("[ImageSearch] failed to search, err: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, weberror.Info{Error: http.StatusText(http.StatusInternalServerError)})

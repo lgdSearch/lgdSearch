@@ -331,7 +331,7 @@ func TestGetDocs(t *testing.T) {
 
 func TestImageSearch(t *testing.T) {
 	uri := "/image_search"
-	imgPath := "./char.jpg"
+	imgPath := "./1.jpeg"
 	file, err := os.Open(imgPath)
 	if err != nil {
 		t.Error(err.Error())
