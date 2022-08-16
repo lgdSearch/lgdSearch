@@ -27,6 +27,7 @@
 + ResNet50
 + diskcache
 + milvus
++ protobuf序列化
 
 ## 目录结构
 ```
