@@ -831,9 +831,9 @@ func (e *Engine) putInOSS(url string, id uint32) bool {
 	//Endpoint以杭州为例，其它Region请按实际情况填写。
 	endpoint := "http://oss-cn-hangzhou.aliyuncs.com"
 	// 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-	accessKeyId := "LTAI5tRRkejmZXzM5k9QvpfW"
-	accessKeySecret := "TkOOCo6dTGfs6l9j4iZ8UfQJa67Qg3"
-	bucketName := "lgdsearch"
+	accessKeyId := ""
+	accessKeySecret := ""
+	bucketName := ""
 	// 创建OSSClient实例。
 	client, err := oss.New(endpoint, accessKeyId, accessKeySecret)
 	if err != nil {
@@ -861,7 +861,7 @@ func (e *Engine) GetPictureUrl(url string, id uint32, thumbnailUrl *string, call
 		ok = e.putInOSS(url, id)
 	}
 	if ok {
-		*thumbnailUrl = fmt.Sprintf("https://lgdsearch.oss-cn-hangzhou.aliyuncs.com/example/%d.jpg", id)
+		*thumbnailUrl = fmt.Sprintf("/example/%d.jpg", id)
 	} else {
 		*thumbnailUrl = url
 	}
